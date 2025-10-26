@@ -3,27 +3,18 @@ import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-// SellerCreateListing.jsx
-// A seller-facing page for creating a marketplace listing.
-// - Bootstrap-only (fits your current stack)
-// - Client-side validation
-// - Image previews (uploads via multipart/form-data)
-// - Live card preview
-// - Navigate on success
-
 const CATEGORIES = [
   "Electronics",
   "Furniture",
   "Books",
   "Clothing",
-  "Tickets",
   "Appliances",
   "Home & Kitchen",
   "Sports & Outdoors",
   "Other",
 ];
 
-const CONDITIONS = ["New", "Like New", "Good", "Fair", "For Parts"];
+const CONDITIONS = ["New", "Like New", "Good", "Fair"];
 
 export default function SellerCreateListing(props) {
   const navigate = useNavigate();
@@ -35,10 +26,10 @@ export default function SellerCreateListing(props) {
     condition: "Good",
     description: "",
     location: "",
-    deliveryOption: "Pickup", // Pickup | Delivery | Both
+    deliveryOption: "Pickup", 
     contactEmail: "",
     contactPhone: "",
-    images: [], // File[]
+    images: [], 
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -103,7 +94,6 @@ export default function SellerCreateListing(props) {
       formData.images.forEach((file, idx) => fd.append("images", file, file.name || `image_${idx}.jpg`));
 
       // TODO: adjust to your backend route
-      // Keeping base consistent with your user signup endpoint
       const url = "http://localhost:5050/listing/insert";
       const res = await axios.post(url, fd, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -111,8 +101,6 @@ export default function SellerCreateListing(props) {
 
       if (res.status === 200 || res.status === 201) {
         setServerMessage("Listing created successfully.");
-        // If your app tracks auth/userId in parent, you can call props.setUserId here if needed.
-        // Redirect to My Listings page (adjust route as needed)
         navigate("/my-listings");
       } else {
         setServerMessage("Unexpected response from server.");
