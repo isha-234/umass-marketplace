@@ -1,48 +1,51 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, UploadFile, File, Form
+from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 from dotenv import load_dotenv
-from fastapi.middleware.cors import CORSMiddleware
 import os
+import base64
 
-# Load environment variables from .env
 load_dotenv()
 
-MONGO_URI = os.getenv("MONGODB_URI")
-DB_NAME = os.getenv("MONGODB_DB")
-
-# Connect to MongoDB
-client = MongoClient(MONGO_URI)
-db = client[DB_NAME]
-collection = db["form_submissions"]
-
-# Initialize FastAPI app
 app = FastAPI()
 
-# Enable CORS for all origins (so browser can access backend)
+# CORS: allow React frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],       # allow all origins (for testing)
+    allow_origins=["http://localhost:3000"],  # React default
     allow_credentials=True,
-    allow_methods=["*"],       # allow all HTTP methods
-    allow_headers=["*"],       # allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Define form data structure
-class FormData(BaseModel):
-    name: str
-    email: str
-    message: str
+# MongoDB connection
+MONGO_URI = os.getenv("MONGODB_URI")
+DB_NAME = os.getenv("MONGODB_DB")
+client = MongoClient(MONGO_URI)
+db = client[DB_NAME]
+collection = db["items"]
 
-# Endpoint to submit form data
-@app.post("/submit-form")
-async def submit_form(data: FormData):
-    result = collection.insert_one(data.dict())
-    return {"status": "success", "id": str(result.inserted_id)}
-
-# Endpoint to retrieve all submissions
-@app.get("/submissions")
-async def get_submissions():
-    submissions = list(collection.find({}, {"_id": 0}))  # exclude MongoDB _id
-    return submissions
-
+# POST endpoint to submit item
+@app.post("/submit-item")
+async def submit_item(
+    item_name: str = Form(...),
+    category: str = Form(...),
+    description: str = Form(...),
+    price: float = Form(...),
+    images: list[UploadFile] = File(...)
+):
+    image_data = []
+    for img in images:
+        content = await img.read()
+        encoded = base64.b64encode(content).decode("utf-8")
+        image_data.append(encoded)
+    
+    document = {
+        "item_name": item_name,
+        "category": category,
+        "description": description,
+        "price": price,
+        "images": image_data
+    }
+    collection.insert_one(document)
+    return {"status": "success", "item_name": item_name}
