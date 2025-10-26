@@ -34,15 +34,21 @@ class UserSignup(BaseModel):
     email: EmailStr
     password: str
 
-
 @router.post("/signup")
 async def signup(user: UserSignup):
+    #  Check email domain
+    if not user.email.lower().endswith("@umass.edu"):
+        raise HTTPException(status_code=400, detail="UMass email required")
+
+    # Check if user already exists
     existing = await users_collection.find_one({"email": user.email})
     if existing:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail="User already exists")
 
+    # Hash password (run in threadpool to avoid blocking)
     hashed_pw = await run_in_threadpool(hash_password, user.password)
 
+    # Prepare and insert user record
     new_user = {
         "name": user.name,
         "email": user.email,
@@ -50,18 +56,22 @@ async def signup(user: UserSignup):
         "isVerified": False,
         "createdAt": datetime.utcnow()
     }
+
     print("Adding new user..")
     await users_collection.insert_one(new_user)
     print("User added!")
     return {"msg": "User created successfully"}
 
-
 @router.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = await users_collection.find_one({"email": form_data.username})
-    if not user or not verify_password(form_data.password, user["password"]):
-        raise HTTPException(status_code=400, detail="Invalid credentials")
-
+    
+    if not user:
+        raise HTTPException(status_code=400, detail="User not found")
+    
+    if not verify_password(form_data.password, user["password"]):
+        raise HTTPException(status_code=400, detail="Incorrect password")
+    
     token = create_access_token({"sub": user["email"]})
     return {"access_token": token, "token_type": "bearer"}
 
