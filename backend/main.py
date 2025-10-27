@@ -25,13 +25,17 @@ client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 collection = db["items"]
 
-# POST endpoint to submit item
-@app.post("/submit-item")
+@app.post("/listing/insert")
 async def submit_item(
-    item_name: str = Form(...),
-    category: str = Form(...),
-    description: str = Form(...),
+    title: str = Form(...),
     price: float = Form(...),
+    category: str = Form(...),
+    condition: str = Form(...),
+    description: str = Form(...),
+    location: str = Form(...),
+    deliveryOption: str = Form(...),
+    contactEmail: str = Form(...),
+    contactPhone: str = Form(...),
     images: list[UploadFile] = File(...)
 ):
     image_data = []
@@ -39,13 +43,18 @@ async def submit_item(
         content = await img.read()
         encoded = base64.b64encode(content).decode("utf-8")
         image_data.append(encoded)
-    
+
     document = {
-        "item_name": item_name,
-        "category": category,
-        "description": description,
+        "title": title,
         "price": price,
-        "images": image_data
+        "category": category,
+        "condition": condition,
+        "description": description,
+        "location": location,
+        "deliveryOption": deliveryOption,
+        "contactEmail": contactEmail,
+        "contactPhone": contactPhone,
+        "images": image_data,
     }
     collection.insert_one(document)
-    return {"status": "success", "item_name": item_name}
+    return {"status": "success", "title": title}
