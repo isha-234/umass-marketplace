@@ -94,7 +94,8 @@ export default function SellerCreateListing(props) {
       formData.images.forEach((file, idx) => fd.append("images", file, file.name || `image_${idx}.jpg`));
 
       // TODO: adjust to your backend route
-      const url = "http://localhost:5050/listing/insert";
+     
+      const url = "http://127.0.0.1:8000/listing/insert";
       const res = await axios.post(url, fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
