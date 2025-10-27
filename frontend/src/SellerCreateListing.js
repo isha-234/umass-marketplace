@@ -48,8 +48,8 @@ export default function SellerCreateListing(props) {
 
   const handleImages = (e) => {
     const files = Array.from(e.target.files || []);
-    // Limit to 5 images
-    const chosen = files.slice(0, 5);
+
+    const chosen = files.slice(0, 10);
     setFormData((prev) => ({ ...prev, images: chosen }));
   };
 
@@ -270,7 +270,7 @@ export default function SellerCreateListing(props) {
             )}
 
             <div className="mb-3">
-              <label htmlFor="images" className="form-label">Photos (up to 5)</label>
+              <label htmlFor="images" className="form-label">Photos </label>
               <input
                 type="file"
                 id="images"
@@ -322,7 +322,7 @@ export default function SellerCreateListing(props) {
           {/* Thumbnails */}
           {formData.images?.length > 1 && (
             <div className="mt-3 d-flex flex-wrap gap-2">
-              {formData.images.slice(0, 5).map((f, i) => (
+              {formData.images.slice(0, 10).map((f, i) => (
                 <img
                   key={i}
                   src={URL.createObjectURL(f)}
