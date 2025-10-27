@@ -5,7 +5,7 @@ from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel, EmailStr
-from database import users_collection  # ✅ Import MongoDB collection
+from database import users_collection
 
 SECRET_KEY = "supersecretkey"
 ALGORITHM = "HS256"
@@ -36,19 +36,15 @@ class UserSignup(BaseModel):
 
 @router.post("/signup")
 async def signup(user: UserSignup):
-    #  Check email domain
     if not user.email.lower().endswith("@umass.edu"):
         raise HTTPException(status_code=400, detail="UMass email required")
 
-    # Check if user already exists
     existing = await users_collection.find_one({"email": user.email})
     if existing:
         raise HTTPException(status_code=400, detail="User already exists")
 
-    # Hash password (run in threadpool to avoid blocking)
     hashed_pw = await run_in_threadpool(hash_password, user.password)
 
-    # Prepare and insert user record
     new_user = {
         "name": user.name,
         "email": user.email,

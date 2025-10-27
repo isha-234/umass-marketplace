@@ -21,9 +21,9 @@ export default function LoginForm() {
         { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
       );
       //Token: ${res.data.access_token}
-      setMessage(`✅ Succesfully Logged in! `);
+      setMessage(`Succesfully Logged in! `);
     } catch (err) {
-      let errorMessage = "❌ Invalid Credentials or Server Error."; // default message
+      let errorMessage = "Invalid Credentials or Server Error";
 
       if (err.response) {
         const detail = err.response.data?.detail;
@@ -44,7 +44,7 @@ export default function LoginForm() {
       <h1>Sign in</h1>
       <input type="email" placeholder="Email" required onChange={handleChange} />
       <input type="password" placeholder="Password" required onChange={handleChange} />
-      <a href="#">Forgot your password?</a>
+      {/* <a href="#">Forgot your password?</a> */} 
       <button type="submit">Sign In</button>
       <p>{message}</p>
     </form>

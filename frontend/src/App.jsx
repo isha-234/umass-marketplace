@@ -23,14 +23,14 @@ export default function App() {
         <div className="overlay">
           <div className="overlay-panel overlay-left">
             <h1>Welcome Back!</h1>
-            <p>Please login with your umass email id</p>
+            <p>Please login with your UMass email</p>
             <button className="ghost" onClick={() => setIsSignUp(false)}>
               Sign In
             </button>
           </div>
           <div className="overlay-panel overlay-right">
-            <h1>Hello!</h1>
-            <p>Enter your umass email id and start your journey!</p>
+            <h1>Welcome to UMass Marketplace!</h1>
+            <p>Enter your UMass email to get started!</p>
             <button className="ghost" onClick={() => setIsSignUp(true)}>
               Sign Up
             </button>
