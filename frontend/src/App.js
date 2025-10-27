@@ -45,4 +45,25 @@ function App() {
   );
 }
 
+function App() {
+  return (
+    <div>
+      <nav className="navbar navbar-expand-lg bg-light border-bottom">
+        <div className="container">
+          <Link className="navbar-brand fw-semibold" to="/">UMass Marketplace</Link>
+          <div className="ms-auto d-flex gap-2">
+            <Link className="btn btn-outline-secondary" to="/">Home</Link>
+            <Link className="btn btn-primary" to="/sell/new">Create Listing</Link>
+          </div>
+        </div>
+      </nav>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/sell/new" element={<SellerCreateListing />} />
+      </Routes>
+    </div>
+  );
+}
+
 export default App;
