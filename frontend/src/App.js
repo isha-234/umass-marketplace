@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Routes, Route, Link } from "react-router-dom";
 import SellerCreateListing from "./SellerCreateListing";
-import Listings from "./Listings"; // ← your new component
+import Listings from "./Listings"; //
 
 function Home() {
   const [message, setMessage] = useState("");
