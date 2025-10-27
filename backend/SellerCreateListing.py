@@ -14,7 +14,6 @@ load_dotenv()
 
 app = FastAPI()
 
-# ---------------- CORS setup ----------------
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # React frontend URL
@@ -23,19 +22,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---------------- MongoDB setup ----------------
 MONGO_URI = os.getenv("MONGODB_URI")
 DB_NAME = os.getenv("MONGODB_DB")
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 collection = db["items"]
 
-# ---------------- Serve uploaded images ----------------
 UPLOAD_DIR = "uploaded_images"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 app.mount("/uploaded_images", StaticFiles(directory=UPLOAD_DIR), name="uploaded_images")
 
-# ---------------- Upload Listing Endpoint ----------------
 @app.post("/listing/insert")
 async def submit_item(
     title: str = Form(...),
@@ -76,7 +72,6 @@ async def submit_item(
     collection.insert_one(document)
     return {"status": "success", "title": title, "images": image_paths}
 
-# ---------------- Get All Listings Endpoint ----------------
 @app.get("/listing/all")
 def get_all_listings():
     listings = list(collection.find())
@@ -85,7 +80,6 @@ def get_all_listings():
         l["_id"] = str(l["_id"])
     return JSONResponse(content=listings)
 
-# ---------------- Optional Root Endpoint ----------------
 @app.get("/")
 def root():
     return {"message": "Backend is running!"}
