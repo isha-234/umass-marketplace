@@ -158,7 +158,7 @@ export default function SellerCreateListing(props) {
                 className={`form-control ${formErrors.title ? "is-invalid" : ""}`}
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="e.g., iPad Air (4th Gen)"
+                placeholder="e.g., Study Table"
               />
               {formErrors.title && <div className="invalid-feedback">{formErrors.title}</div>}
             </div>
