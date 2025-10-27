@@ -131,7 +131,7 @@ export default function SellerCreateListing(props) {
     }
   };
 
-  const mainImageURL = formData.images?.[0] ? URL.createObjectURL(formData.images[0]) : "https://picsum.photos/seed/umass-sample/600/400";
+  const mainImageURL = formData.images?.[0] ? URL.createObjectURL(formData.images[0]) : require('./Imagetosell.png');
 
   return (
     <div className="container mt-4" style={{ maxWidth: "980px" }}>
