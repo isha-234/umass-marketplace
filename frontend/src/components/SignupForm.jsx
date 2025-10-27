@@ -9,7 +9,6 @@ export default function SignupForm() {
   });
   const [message, setMessage] = useState("");
 
-  // handle input change
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -21,9 +20,8 @@ export default function SignupForm() {
     });
   };
 
-  // handle form submit
   const handleSubmit = async (e) => {
-    e.preventDefault(); // stop page refresh
+    e.preventDefault();
     try {
       const res = await axios.post(
         "http://127.0.0.1:8000/signup", // your FastAPI endpoint
@@ -34,10 +32,10 @@ export default function SignupForm() {
           },
         }
       );
-      setMessage("✅ Signup successful! You can now log in.");
+      setMessage("Signup successful! You can now log in.");
       console.log(res.data);
     } catch (err) {
-      let errorMessage = "❌ Signup failed. Please try again."; // default message
+      let errorMessage = "Signup failed. Please try again.";
 
       if (err.response) {
         const detail = err.response.data?.detail;

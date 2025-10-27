@@ -21,16 +21,16 @@ export default function LoginForm() {
         { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
       );
       //Token: ${res.data.access_token}
-      setMessage(`✅ Succesfully Logged in! `);
+      setMessage(`Succesfully Logged in! `); //
     } catch (err) {
-      let errorMessage = "❌ Invalid Credentials or Server Error."; // default message
+      let errorMessage = "Invalid Credentials or Server Error."; // default message
 
       if (err.response) {
         const detail = err.response.data?.detail;
         if (detail === "User not found") {
-          errorMessage = "User not Found.  Sign up first!.";
+          errorMessage = "User not Found. Sign up first!";
         } else if (detail === "Incorrect password") {
-          errorMessage = "Incorrect password. Please try again.";
+          errorMessage = "Incorrect password. Please try again!";
         } 
       }
 
