@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Routes, Route, Link } from "react-router-dom";
 import SellerCreateListing from "./SellerCreateListing";
+import Listings from "./Listings"; //
 
 function Home() {
   const [message, setMessage] = useState("");
@@ -30,6 +31,7 @@ function App() {
           <div className="ms-auto d-flex gap-2">
             <Link className="btn btn-outline-secondary" to="/">Home</Link>
             <Link className="btn btn-primary" to="/sell/new">Create Listing</Link>
+            <Link className="btn btn-outline-primary" to="/listings">View Listings</Link> {/* ← added */}
           </div>
         </div>
       </nav>
@@ -37,6 +39,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/sell/new" element={<SellerCreateListing />} />
+        <Route path="/listings" element={<Listings />} /> {/* ← added */}
       </Routes>
     </div>
   );
