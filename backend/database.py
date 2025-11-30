@@ -10,4 +10,13 @@ if not MONGO_URI:
 
 client = AsyncIOMotorClient(MONGO_URI, tlsCAFile=certifi.where())
 db = client["umass_db"]
-users_collection = db["user"]
+
+def get_users_collection():
+    users_collection = db["user"]
+    return users_collection
+
+def get_items_collection():
+    items_collection = db["items"]
+    return items_collection
+
+

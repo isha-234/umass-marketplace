@@ -5,7 +5,7 @@ from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel, EmailStr
-from database import users_collection
+from database import get_users_collection
 
 SECRET_KEY = "supersecretkey"
 ALGORITHM = "HS256"
@@ -14,6 +14,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+users_collection = get_users_collection()
 
 
 def hash_password(password: str):
