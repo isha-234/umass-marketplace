@@ -1,0 +1,169 @@
+/* ===== Global Styling ===== */
+.homepage {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #f2fdf5 0%, #e9f5ef 100%);
+  min-height: 100vh;
+  padding: 1rem 2rem 3rem;
+  color: #2e7d32;
+}
+
+/* ===== Navbar ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #dce7de;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.6rem;
+}
+
+.brand-highlight {
+  color: #388e3c;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: #2e7d32;
+}
+
+/* ===== Hero Section ===== */
+.hero {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.tagline {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #3e3e3e;
+  margin-bottom: 2rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.action-card {
+  background-color: #fff;
+  border: 2px solid #2e7d32;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  height: 130px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: #2e7d32;
+  font-size: 1.6rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.action-card.buy:hover {
+  background-color: #e8f5e9;
+  transform: translateY(-5px);
+}
+
+.action-card.sell:hover {
+  background-color: #f1f8e9;
+  transform: translateY(-5px);
+}
+
+/* ===== Events Section ===== */
+.events {
+  margin-top: 4rem;
+}
+
+.events-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0 0.5rem;
+}
+
+.events-header h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1b5e20;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-btn {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #2e7d32;
+}
+
+.nav-btn:hover {
+  background-color: #2e7d32;
+  color: white;
+}
+
+/* ===== Scrollable Events ===== */
+.events-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  scroll-behavior: smooth;
+  padding: 1rem 0;
+}
+
+.event-card {
+  flex: 0 0 220px;
+  height: 120px;
+  background-color: white;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #1b5e20;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .actions {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .event-card {
+    flex: 0 0 180px;
+  }
+
+  .brand {
+    font-size: 1.4rem;
+  }
+}
