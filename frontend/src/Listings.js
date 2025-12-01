@@ -90,6 +90,7 @@ export default function Listings() {
 
   return (
     <div className="listings-page">
+      
       <section className="listings-hero">
         <div className="hero-content">
           <p className="eyebrow">Marketplace</p>
@@ -153,8 +154,8 @@ export default function Listings() {
 
         <div className="listings-grid">
           {items.map((item) => (
-            <article key={item._id} className="listing-card">
-              <div className="image-wrapper clickable" onClick={() => openDetails(item)}>
+            <article key={item._id} className="listing-card" onClick={() => openDetails(item)}>
+              <div className="image-wrapper clickable" >
                 {item.images?.[0] ? (
                   <img
                     src={`${BACKEND_URL}${item.images[0]}`}

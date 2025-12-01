@@ -127,6 +127,7 @@
   grid-template-columns: 1.4fr 1fr 1fr 1fr;
   gap: 12px;
   margin-bottom: 16px;
+  align-items: center;
 }
 
 .filter-bar input,
@@ -139,6 +140,7 @@
   background: #f9fbfc;
   color: #0f3c3a;
   height: 44px;
+  line-height: 20px;
 }
 
 .filter-bar input:focus,
@@ -166,6 +168,7 @@
 .listing-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 28px rgba(0, 105, 92, 0.16);
+  cursor: pointer;
 }
 
 .image-wrapper {
