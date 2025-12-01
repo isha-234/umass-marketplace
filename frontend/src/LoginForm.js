@@ -6,32 +6,33 @@ export default function LoginForm() {
   const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.type === "email" ? "email" : "password"]: e.target.value });
+    const { type, value } = e.target;
+    setForm({ ...form, [type === "email" ? "email" : "password"]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8000/login", // or "/api/login" if proxy is set
+        "http://127.0.0.1:8000/login",
         new URLSearchParams({
           username: form.email,
           password: form.password,
         }),
         { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
       );
-      //Token: ${res.data.access_token}
-      setMessage(`Succesfully Logged in! `);
+      setMessage("Successfully Logged in!");
+      console.log("Response:", res.data);
     } catch (err) {
       let errorMessage = "Invalid Credentials or Server Error";
 
-      if (err.response) {
-        const detail = err.response.data?.detail;
+      if (err.response?.data?.detail) {
+        const detail = err.response.data.detail;
         if (detail === "User not found") {
-          errorMessage = "User not Found.  Sign up first!.";
+          errorMessage = "User not found. Please sign up first!";
         } else if (detail === "Incorrect password") {
           errorMessage = "Incorrect password. Please try again.";
-        } 
+        }
       }
 
       setMessage(errorMessage);
@@ -44,7 +45,6 @@ export default function LoginForm() {
       <h1>Sign in</h1>
       <input type="email" placeholder="Email" required onChange={handleChange} />
       <input type="password" placeholder="Password" required onChange={handleChange} />
-      {/* <a href="#">Forgot your password?</a> */} 
       <button type="submit">Sign In</button>
       <p>{message}</p>
     </form>

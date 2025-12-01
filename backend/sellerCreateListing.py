@@ -1,10 +1,9 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form
 from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
-from pymongo import MongoClient
 from pathlib import Path
-import os
 import time
 import shutil
 from database import get_items_collection
@@ -57,14 +56,17 @@ async def submit_item(
         "images": image_paths,  # store file paths, not base64
     }
 
-    result = items_collection.insert_one(document)
+    # Motor returns a coroutine; await it to get the InsertOneResult
+    result = await items_collection.insert_one(document)
     return {"status": "success", "id": str(result.inserted_id), "title": title, "images": image_paths}
 
 @router.get("/listing/all")
-def get_all_listings():
-    listings = list(items_collection.find())
+async def get_all_listings():
+    cursor = items_collection.find()
+    listings = await cursor.to_list(length=None)
     # Convert ObjectId to string for JSON
     for listing in listings:
         if isinstance(listing.get("_id"), ObjectId):
             listing["_id"] = str(listing["_id"])
-    return JSONResponse(content=listings)
+    # Ensure any ObjectId/datetime fields are serializable
+    return JSONResponse(content=jsonable_encoder(listings))

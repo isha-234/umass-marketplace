@@ -1,24 +1,24 @@
 import React, { useState } from "react";
-import LoginForm from "./components/LoginForm";
-import SignupForm from "./components/SignupForm";
-import "./App.css";
+import "./AuthLogin.css";
+import LoginForm from "./LoginForm";
+import SignupForm from "./SignupForm";
 
-export default function App() {
+export default function AuthLogin() {
   const [isSignUp, setIsSignUp] = useState(false);
 
   return (
     <div className={`container ${isSignUp ? "right-panel-active" : ""}`}>
-
+      {/* Sign Up Form */}
       <div className="form-container sign-up-container">
         <SignupForm />
       </div>
 
-
+      {/* Sign In Form */}
       <div className="form-container sign-in-container">
         <LoginForm />
       </div>
 
-
+      {/* Overlay Section */}
       <div className="overlay-container">
         <div className="overlay">
           <div className="overlay-panel overlay-left">
