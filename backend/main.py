@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from auth import router as auth_router
 from fastapi.staticfiles import StaticFiles
 from sellerCreateListing import router as seller_router, UPLOAD_DIR
+from ViewListings import router as view_listings_router
 import os
 
 load_dotenv()
@@ -25,6 +26,7 @@ app.add_middleware(
 )
 app.include_router(auth_router)
 app.include_router(seller_router)
+app.include_router(view_listings_router)
 
 app.mount("/uploaded_images", StaticFiles(directory=str(UPLOAD_DIR)), name="uploaded_images")
 

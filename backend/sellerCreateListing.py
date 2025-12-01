@@ -1,9 +1,8 @@
 from fastapi import APIRouter, UploadFile, File, Form
 from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
-from bson.objectid import ObjectId
 from dotenv import load_dotenv
 from pathlib import Path
+from datetime import datetime
 import time
 import shutil
 from database import get_items_collection
@@ -54,19 +53,9 @@ async def submit_item(
         "contactEmail": contactEmail,
         "contactPhone": contactPhone,
         "images": image_paths,  # store file paths, not base64
+        "createdAt": datetime.utcnow(),
     }
 
     # Motor returns a coroutine; await it to get the InsertOneResult
     result = await items_collection.insert_one(document)
     return {"status": "success", "id": str(result.inserted_id), "title": title, "images": image_paths}
-
-@router.get("/listing/all")
-async def get_all_listings():
-    cursor = items_collection.find()
-    listings = await cursor.to_list(length=None)
-    # Convert ObjectId to string for JSON
-    for listing in listings:
-        if isinstance(listing.get("_id"), ObjectId):
-            listing["_id"] = str(listing["_id"])
-    # Ensure any ObjectId/datetime fields are serializable
-    return JSONResponse(content=jsonable_encoder(listings))
