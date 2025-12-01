@@ -1,9 +1,10 @@
-from fastapi import APIRouter, UploadFile, File, Form
+from fastapi import APIRouter, UploadFile, File, Form, Query
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 from pathlib import Path
+from datetime import datetime
 import time
 import shutil
 from database import get_items_collection
@@ -54,6 +55,7 @@ async def submit_item(
         "contactEmail": contactEmail,
         "contactPhone": contactPhone,
         "images": image_paths,  # store file paths, not base64
+        "createdAt": datetime.utcnow(),
     }
 
     # Motor returns a coroutine; await it to get the InsertOneResult
@@ -61,8 +63,30 @@ async def submit_item(
     return {"status": "success", "id": str(result.inserted_id), "title": title, "images": image_paths}
 
 @router.get("/listing/all")
-async def get_all_listings():
-    cursor = items_collection.find()
+async def get_all_listings(
+    q: str | None = Query(None, description="Search term for title/description"),
+    category: str | None = Query(None, description="Filter by category"),
+    condition: str | None = Query(None, description="Filter by condition"),
+    sort: str | None = Query("newest", description="Sort by newest|price_asc|price_desc"),
+):
+    query: dict = {}
+    if q:
+        regex = {"$regex": q, "$options": "i"}
+        query["$or"] = [{"title": regex}, {"description": regex}]
+    if category:
+        query["category"] = category
+    if condition:
+        query["condition"] = condition
+
+    cursor = items_collection.find(query)
+
+    sort_spec = [("createdAt", -1)]
+    if sort == "price_asc":
+        sort_spec = [("price", 1)]
+    elif sort == "price_desc":
+        sort_spec = [("price", -1)]
+    cursor = cursor.sort(sort_spec)
+
     listings = await cursor.to_list(length=None)
     # Convert ObjectId to string for JSON
     for listing in listings:
@@ -70,3 +94,19 @@ async def get_all_listings():
             listing["_id"] = str(listing["_id"])
     # Ensure any ObjectId/datetime fields are serializable
     return JSONResponse(content=jsonable_encoder(listings))
+
+
+@router.get("/listing/categories")
+async def get_categories():
+    # Return all distinct categories for filter UI
+    categories = await items_collection.distinct("category")
+    # Remove falsy/None categories and sort alphabetically
+    cleaned = sorted({c for c in categories if c})
+    return {"categories": cleaned}
+
+
+@router.get("/listing/conditions")
+async def get_conditions():
+    conditions = await items_collection.distinct("condition")
+    cleaned = sorted({c for c in conditions if c})
+    return {"conditions": cleaned}

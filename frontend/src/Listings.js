@@ -6,14 +6,56 @@ const BACKEND_URL = "http://127.0.0.1:8000";
 
 export default function Listings() {
   const [items, setItems] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [conditionOptions, setConditionOptions] = useState([]);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
+  const [condition, setCondition] = useState("");
+  const [sort, setSort] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Fetch categories once for the filter dropdown
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get(`${BACKEND_URL}/listing/categories`);
+        const cats = res.data?.categories ?? [];
+        setCategoryOptions(cats);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Fetch conditions once for the filter dropdown
+  useEffect(() => {
+    const fetchConditions = async () => {
+      try {
+        const res = await axios.get(`${BACKEND_URL}/listing/conditions`);
+        const conds = res.data?.conditions ?? [];
+        setConditionOptions(conds);
+      } catch (err) {
+        console.error("Error fetching conditions:", err);
+      }
+    };
+    fetchConditions();
+  }, []);
 
   useEffect(() => {
     let active = true;
     const fetchListings = async () => {
       try {
-        const res = await axios.get(`${BACKEND_URL}/listing/all`);
+        setLoading(true);
+        const res = await axios.get(`${BACKEND_URL}/listing/all`, {
+          params: {
+            q: search || undefined,
+            category: category || undefined,
+            condition: condition || undefined,
+            sort,
+          },
+        });
         if (!active) return;
         setItems(res.data);
       } catch (err) {
@@ -28,7 +70,7 @@ export default function Listings() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [search, category, condition, sort]);
 
   return (
     <div className="listings-page">
@@ -57,6 +99,36 @@ export default function Listings() {
       </section>
 
       <section className="listings-grid-section">
+        <div className="filter-bar">
+          <input
+            type="search"
+            placeholder="Search title or description"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <select value={category || ""} onChange={(e) => setCategory(e.target.value)}>
+            <option value="">Category</option>
+            {categoryOptions.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+          <select value={condition || ""} onChange={(e) => setCondition(e.target.value)}>
+            <option value="">Condition</option>
+            {conditionOptions.map((cond) => (
+              <option key={cond} value={cond}>
+                {cond}
+              </option>
+            ))}
+          </select>
+          <select value={sort} onChange={(e) => setSort(e.target.value)}>
+            <option value="newest">Newest</option>
+            <option value="price_desc">Price: High to Low</option>
+            <option value="price_asc">Price: Low to High</option>
+          </select>
+        </div>
+
         {loading && <div className="muted">Loading listings…</div>}
         {error && <div className="error">{error}</div>}
         {!loading && !error && items.length === 0 && (

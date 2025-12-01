@@ -122,6 +122,31 @@
   border: 1px solid #e2e7eb;
 }
 
+.filter-bar {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filter-bar input,
+.filter-bar select {
+  padding: 10px 12px;
+  border: 1px solid #cfd7dd;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
+  background: #f9fbfc;
+  color: #0f3c3a;
+  height: 44px;
+}
+
+.filter-bar input:focus,
+.filter-bar select:focus {
+  outline: 2px solid #4db6ac;
+  border-color: #4db6ac;
+}
+
 .listings-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -245,6 +270,10 @@
 
 @media (max-width: 900px) {
   .listings-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-bar {
     grid-template-columns: 1fr;
   }
 }
