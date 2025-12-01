@@ -14,6 +14,8 @@ export default function Listings() {
   const [sort, setSort] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedImage, setSelectedImage] = useState("");
 
   // Fetch categories once for the filter dropdown
   useEffect(() => {
@@ -71,6 +73,20 @@ export default function Listings() {
       active = false;
     };
   }, [search, category, condition, sort]);
+
+  // Close modal on Escape
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setSelectedItem(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  const openDetails = (item) => {
+    setSelectedItem(item);
+    setSelectedImage(item.images?.[0] ? `${BACKEND_URL}${item.images[0]}` : "");
+  };
 
   return (
     <div className="listings-page">
@@ -138,7 +154,7 @@ export default function Listings() {
         <div className="listings-grid">
           {items.map((item) => (
             <article key={item._id} className="listing-card">
-              <div className="image-wrapper">
+              <div className="image-wrapper clickable" onClick={() => openDetails(item)}>
                 {item.images?.[0] ? (
                   <img
                     src={`${BACKEND_URL}${item.images[0]}`}
@@ -180,6 +196,63 @@ export default function Listings() {
           ))}
         </div>
       </section>
+
+      {selectedItem && (
+        <div className="modal-overlay" onClick={() => setSelectedItem(null)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn" onClick={() => setSelectedItem(null)}>
+              ×
+            </button>
+            <div className="modal-content">
+              <div className="modal-image">
+                {selectedImage ? (
+                  <img src={selectedImage} alt={selectedItem.title} />
+                ) : (
+                  <div className="image-placeholder">No photo</div>
+                )}
+                {selectedItem.images?.length > 1 && (
+                  <div className="modal-thumbs">
+                    {selectedItem.images.map((img, idx) => {
+                      const url = `${BACKEND_URL}${img}`;
+                      return (
+                        <img
+                          key={idx}
+                          src={url}
+                          alt={`thumb-${idx}`}
+                          className={url === selectedImage ? "active" : ""}
+                          onClick={() => setSelectedImage(url)}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+              <div className="modal-details">
+                <div className="modal-header">
+                  <h2>{selectedItem.title}</h2>
+                  <span className="price">${selectedItem.price}</span>
+                </div>
+                <p className="meta">
+                  {selectedItem.category} • {selectedItem.condition}
+                </p>
+                <p className="description">{selectedItem.description}</p>
+                <div className="detail-grid">
+                  <div>
+                    <strong>Location:</strong> {selectedItem.location}
+                  </div>
+                  <div>
+                    <strong>Delivery:</strong> {selectedItem.deliveryOption}
+                  </div>
+                </div>
+                <div className="contact">
+                  <span>{selectedItem.contactEmail}</span>
+                  <span>{selectedItem.contactPhone}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
