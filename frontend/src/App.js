@@ -1,40 +1,69 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Routes, Route } from "react-router-dom";
+import React from "react";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  Link,
+} from "react-router-dom";
 import SellerCreateListing from "./SellerCreateListing";
 import Listings from "./Listings";
 import AuthLogin from "./AuthLogin";
-import "./App.css";
 import HomePage from "./HomePage";
+import "./App.css";
 
-function Home() {
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000/")
-      .then((res) => setMessage(res.data.message))
-      .catch((err) => console.error(err));
-  }, []);
-
+function Navbar() {
   return (
-    <div className="home-container">
-      <h1 className="home-title">UMass Marketplace</h1>
-      <p className="home-subtitle">Backend says: {message}</p>
-    </div>
+    <nav className="topbar">
+      <div className="topbar-inner">
+        <Link className="topbar-brand" to="/home">
+          UMass Marketplace
+        </Link>
+
+        <div className="topbar-actions">
+          <Link
+            className="topbar-btn topbar-btn-outline"
+            to="/home"
+          >
+            Home
+          </Link>
+          <Link
+            className="topbar-btn topbar-btn-primary"
+            to="/sell/new"
+          >
+            Create Listing
+          </Link>
+          <Link
+            className="topbar-btn topbar-btn-outline"
+            to="/listings"
+          >
+            View Listings
+          </Link>
+        </div>
+      </div>
+    </nav>
   );
 }
 
+
 function App() {
+  const location = useLocation();
+  const hideNavbar = location.pathname === "/auth";
+
   return (
-    <div>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/listings" element={<Listings />} />
-        <Route path="/sell/new" element={<SellerCreateListing />} />
-        <Route path="/auth" element={<AuthLogin />} />
-      </Routes>
-    </div>
+    <>
+      {!hideNavbar && <Navbar />}
+
+      <main className="app-main">
+        <Routes>
+          <Route path="/auth" element={<AuthLogin />} />
+          <Route path="/" element={<Navigate to="/auth" />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/listings" element={<Listings />} />
+          <Route path="/sell/new" element={<SellerCreateListing />} />
+        </Routes>
+      </main>
+    </>
   );
 }
 

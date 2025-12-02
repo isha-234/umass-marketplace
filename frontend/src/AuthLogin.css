@@ -1,11 +1,12 @@
-
 * {
   box-sizing: border-box;
 }
 
+/* let App.css handle global body background if you want; 
+   keep a light UMass background here */
 body {
   font-family: "Montserrat", sans-serif;
-  background: #f6f5f7;
+  background: var(--umass-ivory);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -75,12 +76,17 @@ body {
   z-index: 100;
 }
 
-.container.right-panel-active .overlay-container{
+.container.right-panel-active .overlay-container {
   transform: translateX(-100%);
 }
 
 .overlay {
-  background: linear-gradient(to right, #4db6ac, #4db6ac);
+  /* UMass red gradient instead of teal */
+  background: linear-gradient(
+    to right,
+    var(--umass-red-dark),
+    var(--umass-red)
+  );
   color: #fff;
   position: relative;
   left: -100%;
@@ -137,40 +143,49 @@ form {
 }
 
 input {
-  background: #eee;
-  border: none;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
   padding: 12px 15px;
   margin: 8px 0;
   width: 100%;
 }
 
+/* Buttons in UMass colors */
 button {
   border-radius: 20px;
-  border: 1px solid #4db6ac;
-  background-color: #4db6ac;
+  border: 1px solid var(--umass-red);
+  background-color: var(--umass-red);
   color: #fff;
   font-size: 12px;
   font-weight: bold;
   padding: 12px 45px;
   letter-spacing: 1px;
   text-transform: uppercase;
-  transition: transform 80ms ease-in;
+  transition: transform 80ms ease-in, background 0.15s ease, border-color 0.15s ease;
 }
 
 button:hover {
-  opacity: 0.9;
+  opacity: 0.95;
+  background-color: var(--umass-red-dark);
+  border-color: var(--umass-red-dark);
 }
 
 button.ghost {
   background: transparent;
   border-color: #fff;
+  color: #fff;
 }
 
 a {
-  color: #999;
+  color: #6b7280;
   font-size: 12px;
   text-decoration: none;
   margin: 15px 0;
+}
+
+a:hover {
+  color: var(--umass-red);
 }
 
 .social-container {
@@ -178,7 +193,7 @@ a {
 }
 
 .social {
-  border: 1px solid #ccc;
+  border: 1px solid #e5e7eb;
   border-radius: 50%;
   display: inline-flex;
   justify-content: center;
