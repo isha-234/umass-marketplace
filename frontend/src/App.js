@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Routes, Route, Link } from "react-router-dom";
 import SellerCreateListing from "./SellerCreateListing";
-import Listings from "./Listings"; //
+import Listings from "./Listings";
+import Events from "./Events";
+
 
 function Home() {
   const [message, setMessage] = useState("");
@@ -32,6 +34,7 @@ function App() {
             <Link className="btn btn-outline-secondary" to="/">Home</Link>
             <Link className="btn btn-primary" to="/sell/new">Create Listing</Link>
             <Link className="btn btn-outline-primary" to="/listings">View Listings</Link> {/* ← added */}
+            <Link className="btn btn-outline-info" to="/events">Events</Link>
           </div>
         </div>
       </nav>
@@ -40,6 +43,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/sell/new" element={<SellerCreateListing />} />
         <Route path="/listings" element={<Listings />} /> {/* ← added */}
+        <Route path="/events" element={<Events />} />
       </Routes>
     </div>
   );
