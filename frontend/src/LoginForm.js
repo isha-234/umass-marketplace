@@ -12,41 +12,40 @@ export default function LoginForm() {
   const handleChange = (e) => {
     setForm({
       ...form,
-      [e.target.type === "email" ? "email" : "password"]: e.target.value,
+      [e.target.type]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
+
     try {
       setLoading(true);
       const cred = await signInWithEmailAndPassword(auth, form.email, form.password);
-      // Refresh user to pick up newly verified status after clicking email link.
+
       await cred.user.reload();
-      const refreshedUser = auth.currentUser;
-      if (!refreshedUser?.emailVerified) {
-        // Ensure verification email exists; resend to be safe.
+      const refreshed = auth.currentUser;
+
+      if (!refreshed?.emailVerified) {
         await sendEmailVerification(cred.user);
         await signOut(auth);
-        setMessage("Please verify your email. Check your inbox for the link, then sign in again.");
+        setMessage("Please verify your email. Check your inbox for the link.");
         return;
       }
-      // Force fresh ID token with updated emailVerified claim.
-      await refreshedUser.getIdToken(true);
+
+      await refreshed.getIdToken(true);
       setMessage("Successfully logged in!");
       setTimeout(() => navigate("/home"), 600);
+
     } catch (err) {
-      let errorMessage = "Invalid credentials or server error.";
+      let errorMessage = "Invalid credentials.";
       if (err.code === "auth/user-not-found") {
         errorMessage = "User not found. Sign up first.";
       } else if (err.code === "auth/wrong-password") {
-        errorMessage = "Incorrect password. Please try again.";
-      } else if (err.code === "auth/invalid-email") {
-        errorMessage = "Enter a valid email.";
+        errorMessage = "Incorrect password.";
       }
       setMessage(errorMessage);
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -54,23 +53,27 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h1>Sign in</h1>
       <input
         type="email"
         placeholder="Email"
         required
+        value={form.email}
         onChange={handleChange}
       />
+
       <input
         type="password"
         placeholder="Password"
         required
+        value={form.password}
         onChange={handleChange}
       />
+
       <button type="submit" disabled={loading}>
         {loading ? "Signing in..." : "Sign In"}
       </button>
-      <p>{message}</p>
+
+      {message && <p>{message}</p>}
     </form>
   );
 }

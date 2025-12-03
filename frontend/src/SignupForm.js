@@ -4,18 +4,19 @@ import { createUserWithEmailAndPassword, sendEmailVerification, signOut } from "
 import { auth } from "./firebase";
 
 export default function SignupForm() {
-  const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value, type } = e.target;
-    const key = name || (type === "email" ? "email" : type === "password" ? "password" : "name");
-    setForm({
-      ...form,
-      [key]: value,
-    });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -34,24 +35,23 @@ export default function SignupForm() {
     try {
       setLoading(true);
       const cred = await createUserWithEmailAndPassword(auth, form.email, form.password);
-      // Send verification email with redirect back to auth screen.
-      const verificationSettings = {
-        url: process.env.REACT_APP_EMAIL_VERIFICATION_REDIRECT || "http://localhost:3000/auth",
+
+      await sendEmailVerification(cred.user, {
+        url: process.env.REACT_APP_EMAIL_VERIFICATION_REDIRECT ||
+             "http://localhost:3000/auth",
         handleCodeInApp: false,
-      };
-      await sendEmailVerification(cred.user, verificationSettings);
-      // Sign out immediately so the session isn't treated as logged in before verification.
+      });
+
       await signOut(auth);
-      setMessage("Verification Link Sent! Check your email to verify, then log in.");
+      setMessage("Verification Link Sent! Check your email to verify.");
       setTimeout(() => navigate("/auth"), 1200);
+
     } catch (err) {
       let errorMessage = "Signup failed. Please try again.";
       if (err.code === "auth/email-already-in-use") {
         errorMessage = "Email already registered. Try signing in instead.";
       } else if (err.code === "auth/weak-password") {
         errorMessage = "Choose a stronger password.";
-      } else if (err.code === "auth/invalid-email") {
-        errorMessage = "Please enter a valid UMass email.";
       }
       setMessage(errorMessage);
       console.error(err);
@@ -62,7 +62,6 @@ export default function SignupForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h1>Create Account</h1>
       <input
         type="text"
         name="name"
@@ -95,9 +94,11 @@ export default function SignupForm() {
         value={form.confirmPassword}
         onChange={handleChange}
       />
+
       <button type="submit" disabled={loading}>
         {loading ? "Signing up..." : "Verify Email"}
       </button>
+
       {message && <p>{message}</p>}
     </form>
   );

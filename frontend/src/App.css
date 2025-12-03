@@ -1,101 +1,163 @@
+/* App.css */
+
+/* ===== Design System (light only) ===== */
 :root {
+  /* UMass palette */
   --umass-red: #881c1c;
   --umass-red-dark: #6e1414;
   --umass-red-light: #fdf5f5;
   --umass-accent: #b71c1c;
-  --umass-ivory: #faf6f5;
-  --umass-text: #2d2d2d;
-  --shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+
+  /* Surfaces & text */
+  --bg-page: #faf6f5;
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #f6f5f7;
+  --text-main: #1f2933;
+  --text-muted: #6b7280;
+
+  /* Borders & shadows */
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --border-strong: rgba(15, 23, 42, 0.16);
+  --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.06);
+  --shadow-strong: 0 22px 55px rgba(15, 23, 42, 0.12);
+
+  /* Radii & transitions */
+  --radius-sm: 10px;
   --radius: 16px;
-  --transition: all 0.3s ease;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  --transition-fast: 0.15s ease;
+  --transition: 0.25s ease;
 }
 
-
-body {
-  margin: 0;
-  font-family: "Poppins", "Lora", serif;
-  background: var(--umass-ivory);
-  color: var(--umass-text);
+/* App shell */
+.app-main {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--bg-page);
 }
 
-/* Navbar */
+/* ===== NAVBAR (standard height) ===== */
 
-/* Top navbar with UMass colors */
 .topbar {
   width: 100%;
-  background: #ffffff;
+  background: var(--bg-surface);
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(14px);
 }
 
-/* full width, no constraint */
 .topbar-inner {
   width: 100%;
-  padding: 0.75rem 1.5rem;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0.85rem 1.75rem; /* standard height */
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
 }
 
-
+/* Brand */
 .topbar-brand {
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--umass-red); /* same as before */
+  font-weight: 650;
+  font-size: 1.05rem;
+  color: var(--umass-red);
   text-decoration: none;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
 }
 
+.topbar-brand::before {
+  content: "";
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--umass-red-dark), var(--umass-red));
+  margin-right: 0.6rem;
+  box-shadow: 0 0 0 2px rgba(136, 28, 28, 0.16);
+}
+
+/* Right side */
 .topbar-actions {
   margin-left: auto;
   display: flex;
   gap: 0.5rem;
+  align-items: center;
 }
 
-/* pill buttons using UMass palette */
+/* Buttons */
 .topbar-btn {
-  padding: 0.35rem 0.9rem;
-  border-radius: 999px;
-  font-size: 0.9rem;
+  padding: 0.4rem 0.95rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.86rem;
   font-weight: 500;
   border: 1px solid transparent;
   text-decoration: none;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
-/* primary = solid UMass red */
+/* Primary */
 .topbar-btn-primary {
   background: var(--umass-red);
   border-color: var(--umass-red);
   color: #ffffff;
+  box-shadow: 0 12px 24px rgba(136, 28, 28, 0.32);
 }
 
 .topbar-btn-primary:hover {
   background: var(--umass-red-dark);
   border-color: var(--umass-red-dark);
+  transform: translateY(-1px);
 }
 
-/* outline buttons with UMass red border */
+/* Outline */
 .topbar-btn-outline {
-  background: #ffffff;
-  border-color: var(--umass-red);
+  background: transparent;
+  border-color: rgba(136, 28, 28, 0.9);
   color: var(--umass-red);
 }
 
 .topbar-btn-outline:hover {
   background: var(--umass-red-light);
+  box-shadow: 0 8px 18px rgba(136, 28, 28, 0.14);
 }
 
+/* Optional static text on navbar */
 .topbar-user {
-  align-self: center;
   font-size: 0.9rem;
-  color: var(--umass-text);
+  color: var(--text-muted);
 }
 
-.app-main {
-  width: 100%;
-  margin: 0;
-  padding: 0;
+/* Responsive */
+@media (max-width: 768px) {
+  .topbar-inner {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .topbar-brand::before {
+    width: 24px;
+    height: 24px;
+  }
+
+  .topbar-actions {
+    gap: 0.25rem;
+  }
+
+  .topbar-btn {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.78rem;
+  }
 }

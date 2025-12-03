@@ -1,49 +1,73 @@
-* {
-  box-sizing: border-box;
+/* ----------------------------------------------------------
+   GLOBAL AUTH PAGE LAYOUT
+---------------------------------------------------------- */
+
+.auth-page {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(180deg, #faf6f5, #f7ecec);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  font-family: "Inter", sans-serif;
 }
 
-/* let App.css handle global body background if you want; 
-   keep a light UMass background here */
-body {
-  font-family: "Montserrat", sans-serif;
-  background: var(--umass-ivory);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
+/* Top Title */
+.auth-title {
+  text-align: center;
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: #6e1414;
+  margin-bottom: 2.4rem;
+  letter-spacing: -0.2px;
 }
+
+
+/* ----------------------------------------------------------
+   MAIN AUTH CARD
+---------------------------------------------------------- */
 
 .container {
   background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25),
-              0 10px 10px rgba(0,0,0,0.22);
+  border-radius: 22px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.12);
   position: relative;
   overflow: hidden;
-  width: 850px;
-  max-width: 100%;
+  width: 880px;              /* Spacious Apple-like width */
+  max-width: 96%;
   min-height: 500px;
   transition: all 0.6s ease-in-out;
+
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
 }
 
-/* Forms positioning */
+
+/* ----------------------------------------------------------
+   FORM PANELS
+---------------------------------------------------------- */
+
 .form-container {
   position: absolute;
   top: 0;
   height: 100%;
-  transition: all 0.6s ease-in-out;
+  width: 50%;               /* Equal halves */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.55s ease-in-out;
 }
 
 .sign-in-container {
   left: 0;
-  width: 50%;
   z-index: 2;
 }
 
 .sign-up-container {
   left: 0;
-  width: 50%;
   opacity: 0;
   z-index: 1;
 }
@@ -56,15 +80,110 @@ body {
   transform: translateX(100%);
   opacity: 1;
   z-index: 5;
-  animation: show 0.6s;
 }
 
-@keyframes show {
-  0%, 49.99% { opacity: 0; z-index: 1; }
-  50%, 100% { opacity: 1; z-index: 5; }
+/* Inner forms */
+form {
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 280px;
 }
 
-/* Overlay */
+
+/* ----------------------------------------------------------
+   INPUTS
+---------------------------------------------------------- */
+
+input {
+  background: #f4f4f6;
+  border: 1px solid #e3e3e3;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  width: 100%;
+  transition: border 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #881c1c;
+}
+
+
+/* ----------------------------------------------------------
+   BUTTONS
+---------------------------------------------------------- */
+
+button {
+  border-radius: 999px;
+  border: none;
+  padding: 12px 40px;
+  background: #881c1c;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.5px;
+}
+
+button:hover {
+  background: #6e1414;
+}
+
+button.ghost {
+  background: transparent;
+  border: 1.6px solid #ffffff;
+  color: #fff;
+}
+
+button.ghost:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+
+/* ----------------------------------------------------------
+   LINKS
+---------------------------------------------------------- */
+
+a {
+  color: #6b7280;
+  font-size: 0.85rem;
+  text-decoration: none;
+  margin-top: 6px;
+}
+
+a:hover {
+  color: #881c1c;
+}
+
+
+/* ----------------------------------------------------------
+   SOCIAL ICONS (if used)
+---------------------------------------------------------- */
+
+.social-container {
+  margin: 20px 0;
+}
+
+.social {
+  border: 1px solid #e0e0e0;
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ----------------------------------------------------------
+   OVERLAY PANELS
+---------------------------------------------------------- */
+
 .overlay-container {
   position: absolute;
   top: 0;
@@ -72,8 +191,8 @@ body {
   width: 50%;
   height: 100%;
   overflow: hidden;
-  transition: transform 0.6s ease-in-out;
   z-index: 100;
+  transition: transform 0.6s ease-in-out;
 }
 
 .container.right-panel-active .overlay-container {
@@ -81,18 +200,15 @@ body {
 }
 
 .overlay {
-  /* UMass red gradient instead of teal */
-  background: linear-gradient(
-    to right,
-    var(--umass-red-dark),
-    var(--umass-red)
-  );
-  color: #fff;
+  background: linear-gradient(120deg, #881c1c, #6e1414);
+  background-size: cover;
+  background-position: center;
+  color: #ffffff;
   position: relative;
   left: -100%;
-  height: 100%;
   width: 200%;
-  transform: translateX(0);
+  height: 100%;
+  transform: translateX(0%);
   transition: transform 0.6s ease-in-out;
 }
 
@@ -100,22 +216,35 @@ body {
   transform: translateX(50%);
 }
 
+/* The content inside each side of overlay */
 .overlay-panel {
   position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   text-align: center;
   top: 0;
   height: 100%;
   width: 50%;
-  transform: translateX(0);
-  transition: transform 0.6s ease-in-out;
+  padding: 0 2.8rem;
+  transition: transform 0.6s ease;
+}
+
+.overlay-panel h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.overlay-panel p {
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.95;
 }
 
 .overlay-left {
-  transform: translateX(-20%);
+  transform: translateX(-25%);
 }
 
 .container.right-panel-active .overlay-left {
@@ -128,77 +257,30 @@ body {
 }
 
 .container.right-panel-active .overlay-right {
-  transform: translateX(20%);
+  transform: translateX(25%);
 }
 
-form {
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  padding: 0 50px;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
 
-input {
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
-  padding: 12px 15px;
-  margin: 8px 0;
-  width: 100%;
-}
+/* ----------------------------------------------------------
+   MOBILE RESPONSIVE
+---------------------------------------------------------- */
 
-/* Buttons in UMass colors */
-button {
-  border-radius: 20px;
-  border: 1px solid var(--umass-red);
-  background-color: var(--umass-red);
-  color: #fff;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 12px 45px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  transition: transform 80ms ease-in, background 0.15s ease, border-color 0.15s ease;
-}
+@media (max-width: 768px) {
+  .container {
+    width: 95%;
+    min-height: 560px;
+  }
 
-button:hover {
-  opacity: 0.95;
-  background-color: var(--umass-red-dark);
-  border-color: var(--umass-red-dark);
-}
+  .auth-title {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
 
-button.ghost {
-  background: transparent;
-  border-color: #fff;
-  color: #fff;
-}
+  form {
+    max-width: 240px;
+  }
 
-a {
-  color: #6b7280;
-  font-size: 12px;
-  text-decoration: none;
-  margin: 15px 0;
-}
-
-a:hover {
-  color: var(--umass-red);
-}
-
-.social-container {
-  margin: 20px 0;
-}
-
-.social {
-  border: 1px solid #e5e7eb;
-  border-radius: 50%;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  height: 40px;
-  width: 40px;
-  margin: 0 5px;
+  .overlay-panel {
+    padding: 0 1.6rem;
+  }
 }
