@@ -37,7 +37,7 @@ function Navbar() {
               Home
             </Link>
 
-            <Link className="topbar-btn topbar-btn-primary" to="/sell/new">
+            <Link className="topbar-btn topbar-btn-outline" to="/sell/new">
               Create Listing
             </Link>
 
