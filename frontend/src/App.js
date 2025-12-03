@@ -11,6 +11,10 @@ import SellerCreateListing from "./SellerCreateListing";
 import Listings from "./Listings";
 import AuthLogin from "./AuthLogin";
 import HomePage from "./HomePage";
+// import Events from "./Events";
+import ProfileMenu from "./ProfileMenu";
+import MyListings from "./MyListings";
+import DraftListings from "./DraftListings";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "./AuthContext";
 import MessagesDrawer from "./MessagesDrawer";
@@ -119,7 +123,13 @@ function App() {
               </ProtectedRoute>
             }
           />
-        </Routes>
+
+     
+          <Route path="/sell/new" element={<SellerCreateListing />} />
+
+          <Route path="/my-listings" element={<MyListings />} />
+          <Route path="/draft-listings" element={<DraftListings />} />
+   </Routes>
       </main>
     </>
   );

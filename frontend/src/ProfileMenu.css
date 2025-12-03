@@ -1,0 +1,71 @@
+.profile-container {
+  position: relative;
+  display: flex;
+  align-items: center; /* Fix icon vertical misalignment */
+}
+
+/* Profile icon styled like other nav items */
+.profile-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;      /* matches nav button vertical size */
+  margin-left: 0.4rem;
+  display: flex;
+  align-items: center;
+}
+
+.profile-btn:hover {
+  background: var(--umass-red-light); /* subtle hover like outline buttons */
+  border-radius: 999px;
+}
+.profile-container {
+  display: flex;
+  align-items: center; /* Align email + icon in same row */
+  position: relative;
+}
+
+.profile-email {
+  margin-right: 0.6rem;
+  font-size: 0.9rem;
+  color: var(--umass-red);
+  font-weight: 500;
+}
+
+/* Dropdown menu */
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 42px;
+  width: 180px;
+  background: white;
+  border: 1px solid var(--umass-red);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 200;
+}
+
+.dropdown-item {
+  padding: 0.7rem 1rem;
+  text-decoration: none;
+  color: var(--umass-red);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.dropdown-item:hover:not(.logout) {
+  background: var(--umass-red-light);
+}
+
+/* Logout styling — plain text, no highlight */
+.logout {
+  color: var(--umass-red-dark);
+  font-weight: 500;
+}
+.logout:hover {
+  background: none; /* No highlight */
+}

@@ -43,7 +43,7 @@ export default function Listings() {
     });
   };
 
-  // Fetch categories once
+  // Fetch categories once for the filter dropdown
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -57,7 +57,7 @@ export default function Listings() {
     fetchCategories();
   }, []);
 
-  // Fetch conditions once
+  // Fetch conditions once for the filter dropdown
   useEffect(() => {
     const fetchConditions = async () => {
       try {
@@ -104,7 +104,7 @@ export default function Listings() {
     };
   }, [search, category, condition, sort]);
 
-  // Close details modal on Escape key
+  // Close modal on Escape
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.key === "Escape") setSelectedItem(null);
@@ -115,7 +115,9 @@ export default function Listings() {
 
   const openDetails = (item) => {
     setSelectedItem(item);
-    setSelectedImage(item.images?.[0] ? `${BACKEND_URL}${item.images[0]}` : "");
+    setSelectedImage(
+      item.images?.[0] ? `${BACKEND_URL}${item.images[0]}` : ""
+    );
   };
 
   // Start or reuse a conversation for this listing
@@ -128,6 +130,8 @@ export default function Listings() {
         listing_id: item._id,
       });
 
+      // ensure selected item is set (used by ChatModal title)
+      setSelectedItem(item);
       setConversationId(res.data.id);
       setChatOpen(true);
     } catch (err) {
