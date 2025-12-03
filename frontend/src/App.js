@@ -4,6 +4,7 @@ import SellerCreateListing from "./SellerCreateListing";
 import Listings from "./Listings";
 import AuthLogin from "./AuthLogin";
 import HomePage from "./HomePage";
+import Events from "./Events";
 import ProfileMenu from "./ProfileMenu";
 import MyListings from "./MyListings";
 import DraftListings from "./DraftListings";
@@ -47,6 +48,9 @@ function Navbar() {
           >
             View Listings
           </Link>
+          <Link className="topbar-btn topbar-btn-outline" to="/events">
+            Events
+          </Link>
           <ProfileMenu />
         </div>
       </div>
@@ -56,6 +60,7 @@ function Navbar() {
 
 
 function App() {
+  const { user } = useAuth();
   const location = useLocation();
   const hideNavbar = location.pathname === "/auth";
 
@@ -65,8 +70,13 @@ function App() {
 
       <main className="app-main">
         <Routes>
+          {/* Redirect / based on login status */}
+          <Route path="/" element={user ? <Navigate to="/home" /> : <Navigate to="/auth" />} />
+
+          {/* Auth route */}
           <Route path="/auth" element={<AuthLogin />} />
-          <Route path="/" element={<Navigate to="/auth" />} />
+
+          {/* Protected HomePage */}
           <Route
             path="/home"
             element={
@@ -75,12 +85,26 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Listings */}
           <Route path="/listings" element={<Listings />} />
+
+          {/* Protected Create Listing */}
           <Route
             path="/sell/new"
             element={
               <ProtectedRoute>
                 <SellerCreateListing />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Protected Events page */}
+          <Route
+            path="/events"
+            element={
+              <ProtectedRoute>
+                <Events />
               </ProtectedRoute>
             }
           />
