@@ -2,8 +2,10 @@ from fastapi import FastAPI
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
-from auth import router as auth_router
 from fastapi.staticfiles import StaticFiles
+import os
+
+from auth import router as auth_router
 from sellerCreateListing import router as seller_router, UPLOAD_DIR
 from ViewListings import router as view_listings_router
 from ai_assist import router as ai_assist_router

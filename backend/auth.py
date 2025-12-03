@@ -1,87 +1,73 @@
-from fastapi import APIRouter, HTTPException, Depends
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from passlib.context import CryptContext
-from jose import jwt, JWTError
-from datetime import datetime, timedelta
-from fastapi.concurrency import run_in_threadpool
-from pydantic import BaseModel, EmailStr
-from database import get_users_collection
+from datetime import datetime
 
-SECRET_KEY = "supersecretkey"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from firebase_admin import auth as firebase_auth
+
+from database import get_users_collection
+from firebase_admin_setup import initialize_firebase_app
 
 router = APIRouter()
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+security = HTTPBearer(auto_error=False)
 users_collection = get_users_collection()
 
-
-def hash_password(password: str):
-    return pwd_context.hash(password)
-
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+initialize_firebase_app()
 
 
-class UserSignup(BaseModel):
-    name: str
-    email: EmailStr
-    password: str
+async def get_current_user(
+    token: HTTPAuthorizationCredentials = Depends(security),
+):
+    if token is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing Authorization header",
+        )
 
-@router.post("/signup")
-async def signup(user: UserSignup):
-    if not user.email.lower().endswith("@umass.edu"):
-        raise HTTPException(status_code=400, detail="UMass email required")
-
-    existing = await users_collection.find_one({"email": user.email})
-    if existing:
-        raise HTTPException(status_code=400, detail="User already exists")
-
-    hashed_pw = await run_in_threadpool(hash_password, user.password)
-
-    new_user = {
-        "name": user.name,
-        "email": user.email,
-        "password": hashed_pw,
-        "isVerified": False,
-        "createdAt": datetime.utcnow()
-    }
-
-    print("Adding new user..")
-    await users_collection.insert_one(new_user)
-    print("User added!")
-    return {"msg": "User created successfully"}
-
-@router.post("/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = await users_collection.find_one({"email": form_data.username})
-    
-    if not user:
-        raise HTTPException(status_code=400, detail="User not found")
-    
-    if not verify_password(form_data.password, user["password"]):
-        raise HTTPException(status_code=400, detail="Incorrect password")
-    
-    token = create_access_token({"sub": user["email"]})
-    return {"access_token": token, "token_type": "bearer"}
-
-
-@router.get("/me")
-async def get_me(token: str = Depends(oauth2_scheme)):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("sub")
-        user = await users_collection.find_one({"email": email})
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
+        decoded = firebase_auth.verify_id_token(token.credentials)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+        )
 
-        return {"name": user["name"], "email": user["email"], "verified": user.get("isVerified", False)}
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+    uid = decoded.get("uid")
+    if not uid:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token payload",
+        )
+    if not decoded.get("email_verified", False):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email not verified",
+        )
+
+    email = decoded.get("email")
+    user_doc = await users_collection.find_one({"uid": uid}) or (
+        await users_collection.find_one({"email": email}) if email else None
+    )
+    # Lazily create or refresh the user record so Mongo mirrors Firebase.
+    upsert_doc = {
+        "uid": uid,
+        "email": email,
+        "name": decoded.get("name") or decoded.get("email"),
+        "emailVerified": decoded.get("email_verified", False),
+        "lastLoginAt": datetime.utcnow(),
+    }
+    if not user_doc:
+        upsert_doc["createdAt"] = datetime.utcnow()
+        await users_collection.insert_one(upsert_doc)
+    else:
+        await users_collection.update_one({"_id": user_doc["_id"]}, {"$set": upsert_doc})
+
+    return decoded
+
+
+@router.get("/auth/me")
+async def get_me(user=Depends(get_current_user)):
+    return {
+        "uid": user.get("uid"),
+        "email": user.get("email"),
+        "email_verified": user.get("email_verified", False),
+    }
