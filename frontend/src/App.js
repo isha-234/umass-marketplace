@@ -10,6 +10,10 @@ import SellerCreateListing from "./SellerCreateListing";
 import Listings from "./Listings";
 import AuthLogin from "./AuthLogin";
 import HomePage from "./HomePage";
+import ProfileMenu from "./ProfileMenu";
+import MyListings from "./MyListings";
+import DraftListings from "./DraftListings";
+
 import "./App.css";
 
 function Navbar() {
@@ -21,24 +25,10 @@ function Navbar() {
         </Link>
 
         <div className="topbar-actions">
-          <Link
-            className="topbar-btn topbar-btn-outline"
-            to="/home"
-          >
-            Home
-          </Link>
-          <Link
-            className="topbar-btn topbar-btn-primary"
-            to="/sell/new"
-          >
-            Create Listing
-          </Link>
-          <Link
-            className="topbar-btn topbar-btn-outline"
-            to="/listings"
-          >
-            View Listings
-          </Link>
+          <Link className="topbar-btn topbar-btn-outline" to="/home">Home</Link>
+          <Link className="topbar-btn topbar-btn-primary" to="/sell/new">Create Listing</Link>
+          <Link className="topbar-btn topbar-btn-outline" to="/listings">View Listings</Link>
+          <ProfileMenu />
         </div>
       </div>
     </nav>
@@ -61,6 +51,9 @@ function App() {
           <Route path="/home" element={<HomePage />} />
           <Route path="/listings" element={<Listings />} />
           <Route path="/sell/new" element={<SellerCreateListing />} />
+
+          <Route path="/my-listings" element={<MyListings />} />
+          <Route path="/draft-listings" element={<DraftListings />} />
         </Routes>
       </main>
     </>

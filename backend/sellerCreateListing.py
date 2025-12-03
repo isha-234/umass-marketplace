@@ -29,6 +29,7 @@ async def submit_item(
     deliveryOption: str = Form(...),
     contactEmail: str = Form(...),
     contactPhone: str = Form(...),
+    status: str = Form(...),
     images: list[UploadFile] = File(...)
 ):
     image_paths: list[str] = []
@@ -53,6 +54,7 @@ async def submit_item(
         "contactEmail": contactEmail,
         "contactPhone": contactPhone,
         "images": image_paths,  # store file paths, not base64
+        "status": status,
         "createdAt": datetime.utcnow(),
     }
 

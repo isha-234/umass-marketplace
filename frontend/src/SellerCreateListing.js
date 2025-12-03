@@ -98,13 +98,15 @@ export default function SellerCreateListing(props) {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (status) => {
     setServerMessage("");
 
-    const errors = validate();
-    setFormErrors(errors);
-    if (Object.keys(errors).length > 0) return;
+    // Only validate when publishing
+    if (status === "published") {
+      const errors = validate();
+      setFormErrors(errors);
+      if (Object.keys(errors).length > 0) return;
+    }
 
     try {
       setSubmitting(true);
@@ -118,6 +120,7 @@ export default function SellerCreateListing(props) {
       fd.append("deliveryOption", formData.deliveryOption);
       fd.append("contactEmail", formData.contactEmail.trim());
       fd.append("contactPhone", formData.contactPhone.trim());
+      fd.append("status", status);
       formData.images.forEach((file, idx) =>
         fd.append("images", file, file.name || `image_${idx}.jpg`)
       );
@@ -127,8 +130,13 @@ export default function SellerCreateListing(props) {
       });
 
       if (res.status === 200 || res.status === 201) {
-        setServerMessage("Listing created successfully.");
-        navigate("/my-listings");
+        if (status === "draft") {
+            setServerMessage("Draft saved.");
+            navigate("/draft-listings");
+          } else {
+            setServerMessage("Listing published.");
+            navigate("/my-listings");
+          }
       } else {
         setServerMessage("Unexpected response from server.");
       }
@@ -180,7 +188,7 @@ export default function SellerCreateListing(props) {
       <div className="row g-4">
         {/* Form column */}
         <div className="col-12 col-lg-7">
-          <form onSubmit={handleSubmit}>
+          <form>
             <div className="mb-3">
               <label htmlFor="title" className="form-label">
                 Item Name
@@ -384,13 +392,27 @@ export default function SellerCreateListing(props) {
             </div>
 
             <div className="d-flex gap-2">
+              {/* Publish */}
               <button
-                type="submit"
+                type="button"
                 className="btn btn-primary"
                 disabled={submitting}
+                onClick={() => handleSubmit("published")}
               >
                 {submitting ? "Publishing…" : "Publish Listing"}
               </button>
+
+              {/* Save Draft */}
+              <button
+                type="button"
+                className="btn btn-secondary"
+                disabled={submitting}
+                onClick={() => handleSubmit("draft")}
+              >
+                Save Draft
+              </button>
+
+              {/* Cancel */}
               <button
                 type="button"
                 className="btn btn-outline-secondary"

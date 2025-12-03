@@ -54,3 +54,23 @@ async def get_conditions():
     cleaned = sorted({c for c in conditions if c})
     return {"conditions": cleaned}
 
+@router.get("/listing/user/published")
+async def get_my_published_listings(email: str):
+    cursor = items_collection.find({"contactEmail": email, "status": "published"})
+    listings = await cursor.to_list(None)
+
+    for listing in listings:
+        listing["_id"] = str(listing["_id"])
+
+    return listings
+
+
+@router.get("/listing/user/drafts")
+async def get_my_draft_listings(email: str):
+    cursor = items_collection.find({"contactEmail": email, "status": "draft"})
+    listings = await cursor.to_list(None)
+
+    for listing in listings:
+        listing["_id"] = str(listing["_id"])
+
+    return listings
