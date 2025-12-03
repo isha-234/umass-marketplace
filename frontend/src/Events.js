@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import './Events.css';
+import "./Events.css";
 
-const placeholderEvents = [
+const eventsData = [
   {
     id: 1,
     title: "UMass Amherst Farmers Market",
     date: "October 26, 2024",
     location: "Goodell Lawn",
-    description: "Weekly farmers market featuring local vendors and artisans. Fresh produce, handmade goods, and campus community gathering.",
-    category: "Community"
+    description:
+      "Weekly farmers market featuring local vendors and artisans. Fresh produce, handmade goods, and campus community gathering.",
+    category: "Community",
   },
   {
     id: 2,
@@ -16,7 +17,7 @@ const placeholderEvents = [
     date: "November 12, 2024",
     location: "Campus Center Auditorium",
     description: "Discover and support student-run businesses and creative projects.",
-    category: "Business"
+    category: "Business",
   },
   {
     id: 3,
@@ -24,199 +25,141 @@ const placeholderEvents = [
     date: "December 3, 2024",
     location: "Student Union Ballroom",
     description: "A festive market for handmade crafts, jewelry, and unique gifts.",
-    category: "Arts & Crafts"
+    category: "Arts & Crafts",
   },
   {
     id: 4,
     title: "Tech & Innovation Expo",
     date: "November 20, 2024",
     location: "Integrated Sciences Building",
-    description: "Explore cutting-edge student projects and startup ideas. Network with tech enthusiasts and entrepreneurs.",
-    category: "Technology"
+    description:
+      "Explore cutting-edge student projects and startup ideas. Network with tech enthusiasts and entrepreneurs.",
+    category: "Technology",
   },
   {
     id: 5,
     title: "Vintage Marketplace",
     date: "December 10, 2024",
     location: "Old Chapel Courtyard",
-    description: "Find unique vintage clothing, accessories, and collectibles from local sellers and students.",
-    category: "Fashion"
+    description:
+      "Find unique vintage clothing, accessories, and collectibles from local sellers and students.",
+    category: "Fashion",
   },
   {
     id: 6,
     title: "Book & Media Exchange",
     date: "November 30, 2024",
     location: "W.E.B. Du Bois Library Plaza",
-    description: "Buy, sell, or trade textbooks, novels, vinyl records, and media. Save money and find hidden treasures.",
-    category: "Books & Media"
+    description:
+      "Buy, sell, or trade textbooks, novels, vinyl records, and media. Save money and find hidden treasures.",
+    category: "Books & Media",
   },
   {
     id: 7,
-    title: "Sustainability Fair",
+    title: "Student Music Fest",
     date: "December 15, 2024",
-    location: "Campus Pond Area",
-    description: "Learn about sustainable living, eco-friendly products, and zero-waste initiatives on campus.",
-    category: "Sustainability"
-  },
-  {
-    id: 8,
-    title: "Holiday Gift Market",
-    date: "December 18, 2024",
-    location: "Student Union Atrium",
-    description: "Perfect for holiday shopping! Unique gifts, handmade items, and special deals from campus vendors.",
-    category: "Holiday"
+    location: "Fine Arts Center",
+    description:
+      "Enjoy performances by student bands, solo artists, and musical ensembles across campus.",
+    category: "Music",
   },
 ];
 
 export default function Events() {
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const featuredEvent = eventsData[0];
+  const otherEvents = eventsData.slice(1);
 
-  const featuredEvent = placeholderEvents[0];
-  const otherEvents = placeholderEvents.slice(1);
-
-  const handleLearnMore = (event) => {
-    setSelectedEvent(event);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedEvent(null);
-  };
+  useEffect(() => {
+    document.body.style.overflow = selectedEvent ? "hidden" : "auto";
+  }, [selectedEvent]);
 
   return (
     <div className="events-page">
-      <div className="events-header">
+      {/* Header */}
+      <header className="events-header">
         <h1 className="events-title">Upcoming Events</h1>
-        <p className="events-subtitle">Discover amazing events happening around campus</p>
-      </div>
+        <p className="events-subtitle">
+          Discover amazing events happening around campus
+        </p>
+      </header>
 
-      {/* Featured Event Banner */}
-      <div className="container py-5">
-        <div className="featured-event-banner">
-          <div className="featured-image-section">
-            <img 
-              src={`https://picsum.photos/seed/${featuredEvent.id}/800/500`}
-              alt={featuredEvent.title}
-              className="featured-image"
-            />
-          </div>
-          <div className="featured-content-section">
-            <div className="featured-badge">✨ Featured Event</div>
-            <h1 className="featured-title">{featuredEvent.title}</h1>
-            <p className="featured-description">{featuredEvent.description}</p>
-            <div className="featured-meta">
-              <div className="meta-item">
-                <span className="meta-icon">📅</span>
-                <span>{featuredEvent.date}</span>
-              </div>
-              <div className="meta-item">
-                <span className="meta-icon">📍</span>
-                <span>{featuredEvent.location}</span>
-              </div>
-              <div className="meta-item">
-                <span className="meta-icon">🏷️</span>
-                <span>{featuredEvent.category}</span>
-              </div>
-            </div>
-            <button className="btn-featured" onClick={() => handleLearnMore(featuredEvent)}>
-              View Details
-              <span className="btn-arrow">→</span>
-            </button>
-          </div>
+      {/* Featured Event */}
+      <section className="featured-event">
+        <img
+          src={`https://picsum.photos/seed/${featuredEvent.id}/800/400`}
+          alt={featuredEvent.title}
+          className="featured-image"
+        />
+        <div className="featured-content">
+          <span className="featured-category">{featuredEvent.category}</span>
+          <h2 className="featured-title">{featuredEvent.title}</h2>
+          <p className="featured-description">{featuredEvent.description}</p>
+          <p className="featured-meta">
+            📅 {featuredEvent.date} | 📍 {featuredEvent.location}
+          </p>
+          <button
+            className="btn-featured"
+            onClick={() => setSelectedEvent(featuredEvent)}
+          >
+            View Details
+          </button>
         </div>
+      </section>
 
-        <div className="events-grid">
-          {otherEvents.map((event, index) => (
-            <div 
-              key={event.id} 
-              className="event-card"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className="event-image-container">
-                <img 
-                  src={`https://picsum.photos/seed/${event.id}/600/300`} 
-                  className="event-image" 
-                  alt={event.title} 
-                />
-                <div className="event-overlay"></div>
-              </div>
-              <div className="event-content">
-                <div className="event-category-badge">{event.category}</div>
-                <h3 className="event-title">{event.title}</h3>
-                <div className="event-meta">
-                  <div className="event-meta-item">
-                    <span className="meta-icon">📅</span>
-                    <span className="meta-text">{event.date}</span>
-                  </div>
-                  <div className="event-meta-item">
-                    <span className="meta-icon">📍</span>
-                    <span className="meta-text">{event.location}</span>
-                  </div>
-                </div>
-                <p className="event-description">{event.description}</p>
-                <button 
-                  onClick={() => handleLearnMore(event)} 
-                  className="btn-learn-more"
-                >
-                  Learn More
-                  <span className="btn-arrow">→</span>
-                </button>
-              </div>
-            </div>
-        ))}
-        </div>
-      </div>
-
-      {selectedEvent && (
-        <EventModal event={selectedEvent} onClose={handleCloseModal} />
-      )}
-    </div>
-  );
-}
-
-function EventModal({ event, onClose }) {
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
-
-  return (
-    <div className="event-modal-overlay" onClick={onClose}>
-      <div className="event-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close-btn" onClick={onClose}>
-          ✕
-        </button>
-        <div className="modal-header-section">
-          <h2 className="modal-title">{event.title}</h2>
-        </div>
-        <div className="modal-body-section">
-          <div className="modal-image">
-            <img 
-              src={`https://picsum.photos/seed/${event.id}/800/400`} 
+      {/* More Events */}
+      <h2 className="section-title">More Events</h2>
+      <section className="events-grid">
+        {otherEvents.map((event) => (
+          <div
+            key={event.id}
+            className="event-card"
+            onClick={() => setSelectedEvent(event)}
+          >
+            <img
+              src={`https://picsum.photos/seed/${event.id}/400/200`}
               alt={event.title}
+              className="event-image"
             />
-          </div>
-          <div className="modal-info">
-            <div className="modal-info-item">
-              <span className="info-label">📅 Date</span>
-              <span className="info-value">{event.date}</span>
-            </div>
-            <div className="modal-info-item">
-              <span className="info-label">📍 Location</span>
-              <span className="info-value">{event.location}</span>
-            </div>
-            <div className="modal-info-item">
-              <span className="info-label">📝 Description</span>
-              <p className="info-description">{event.description}</p>
+            <div className="event-info">
+              <span className="event-category">{event.category}</span>
+              <h3>{event.title}</h3>
+              <p className="event-meta">
+                📅 {event.date} | 📍 {event.location}
+              </p>
             </div>
           </div>
-          <div className="modal-actions">
-            <button className="btn-register">Register Now</button>
-            <button className="btn-share">Share Event</button>
+        ))}
+      </section>
+
+      {/* Modal */}
+      {selectedEvent && (
+        <div
+          className="modal-overlay"
+          onClick={() => setSelectedEvent(null)}
+        >
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="close-btn"
+              onClick={() => setSelectedEvent(null)}
+            >
+              ✕
+            </button>
+            <h2>{selectedEvent.title}</h2>
+            <img
+              src={`https://picsum.photos/seed/${selectedEvent.id}/800/400`}
+              alt={selectedEvent.title}
+            />
+            <p>📅 {selectedEvent.date}</p>
+            <p>📍 {selectedEvent.location}</p>
+            <p>{selectedEvent.description}</p>
+            <div className="modal-actions">
+              <button className="btn-register">Register Now</button>
+              <button className="btn-share">Share Event</button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
