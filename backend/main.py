@@ -15,6 +15,7 @@ from auth import router as auth_router
 from sellerCreateListing import router as seller_router, UPLOAD_DIR
 from ViewListings import router as view_listings_router
 from ai_assist import router as ai_assist_router
+from chat import router as chat_router
 import os
 app = FastAPI()
 
@@ -35,6 +36,7 @@ app.include_router(auth_router)
 app.include_router(seller_router)
 app.include_router(view_listings_router)
 app.include_router(ai_assist_router)
+app.include_router(chat_router)
 app.mount("/uploaded_images", StaticFiles(directory=str(UPLOAD_DIR)), name="uploaded_images")
 
 @app.get("/")
