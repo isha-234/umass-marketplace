@@ -1,18 +1,22 @@
 import React from "react";
-import {
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
-  Link,
-} from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, Link, useNavigate } from "react-router-dom";
 import SellerCreateListing from "./SellerCreateListing";
 import Listings from "./Listings";
 import AuthLogin from "./AuthLogin";
 import HomePage from "./HomePage";
+import ProtectedRoute from "./ProtectedRoute";
+import { useAuth } from "./AuthContext";
 import "./App.css";
 
 function Navbar() {
+  const { user, logout, isVerified } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/auth", { replace: true });
+  };
+
   return (
     <nav className="topbar">
       <div className="topbar-inner">
@@ -39,6 +43,18 @@ function Navbar() {
           >
             View Listings
           </Link>
+          {user && isVerified ? (
+            <>
+              <span className="topbar-user">{user.email}</span>
+              <button className="topbar-btn topbar-btn-outline" onClick={handleLogout}>
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <Link className="topbar-btn topbar-btn-outline" to="/auth">
+              Log In
+            </Link>
+          )}
         </div>
       </div>
     </nav>
@@ -58,9 +74,23 @@ function App() {
         <Routes>
           <Route path="/auth" element={<AuthLogin />} />
           <Route path="/" element={<Navigate to="/auth" />} />
-          <Route path="/home" element={<HomePage />} />
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <HomePage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/listings" element={<Listings />} />
-          <Route path="/sell/new" element={<SellerCreateListing />} />
+          <Route
+            path="/sell/new"
+            element={
+              <ProtectedRoute>
+                <SellerCreateListing />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </main>
     </>
