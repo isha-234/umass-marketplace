@@ -4,14 +4,10 @@ import SellerCreateListing from "./SellerCreateListing";
 import Listings from "./Listings";
 import AuthLogin from "./AuthLogin";
 import HomePage from "./HomePage";
-<<<<<<< HEAD
-import Events from "./Events";
+// import Events from "./Events";
 import ProfileMenu from "./ProfileMenu";
 import MyListings from "./MyListings";
 import DraftListings from "./DraftListings";
-
-=======
->>>>>>> parent of ff8aef4 (Merge pull request #8 from isha-234/tasmiya-adding-events-page)
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "./AuthContext";
 import "./App.css";
@@ -51,27 +47,12 @@ function Navbar() {
           >
             View Listings
           </Link>
-<<<<<<< HEAD
+
           <Link className="topbar-btn topbar-btn-outline" to="/events">
             Events
           </Link>
-          <ProfileMenu />
-=======
-          {user && isVerified ? (
-            <>
-              <span className="topbar-user">{user.email}</span>
-              <button className="topbar-btn topbar-btn-outline" onClick={handleLogout}>
-                Sign Out
-              </button>
-            </>
-          ) : (
-            <Link className="topbar-btn topbar-btn-outline" to="/auth">
-              Log In
-            </Link>
-          )}
->>>>>>> parent of ff8aef4 (Merge pull request #8 from isha-234/tasmiya-adding-events-page)
-        </div>
-      </div>
+</div>
+          <ProfileMenu /> </div>
     </nav>
   );
 }
@@ -106,24 +87,13 @@ function App() {
               </ProtectedRoute>
             }
           />
-<<<<<<< HEAD
 
-          {/* Protected Events page */}
-          <Route
-            path="/events"
-            element={
-              <ProtectedRoute>
-                <Events />
-              </ProtectedRoute>
-            }
-          />
+     
           <Route path="/sell/new" element={<SellerCreateListing />} />
 
           <Route path="/my-listings" element={<MyListings />} />
           <Route path="/draft-listings" element={<DraftListings />} />
-=======
->>>>>>> parent of ff8aef4 (Merge pull request #8 from isha-234/tasmiya-adding-events-page)
-        </Routes>
+   </Routes>
       </main>
     </>
   );
