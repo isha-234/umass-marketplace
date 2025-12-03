@@ -1,6 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+from fastapi import APIRouter, UploadFile, File, Form, Depends
 from fastapi.responses import JSONResponse
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -8,6 +6,8 @@ from bson.objectid import ObjectId
 import os
 import time
 import shutil
+from database import get_items_collection
+from auth import get_current_user
 
 # Load environment variables
 load_dotenv()
@@ -43,9 +43,11 @@ async def submit_item(
     deliveryOption: str = Form(...),
     contactEmail: str = Form(...),
     contactPhone: str = Form(...),
-    images: list[UploadFile] = File(...)
+    images: list[UploadFile] = File(...),
+    user=Depends(get_current_user),
 ):
-    image_paths = []
+    image_paths: list[str] = []
+    contactEmail = contactEmail or user.get("email", "")
 
     # Save images to disk
     for img in images:
@@ -67,6 +69,8 @@ async def submit_item(
         "contactEmail": contactEmail,
         "contactPhone": contactPhone,
         "images": image_paths,  # store file paths, not base64
+        "createdAt": datetime.utcnow(),
+        "ownerUid": user.get("uid"),
     }
 
     collection.insert_one(document)

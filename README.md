@@ -52,3 +52,13 @@ Your frontend application should now be running at http://127.0.0.1:3000.
 - Python 3.7+
 - Node.js
 - npm
+
+## Firebase Authentication
+
+1. Create a Firebase project, enable Email/Password auth, and register a Web app.  
+2. Copy the Firebase web config into `frontend/.env` (see `frontend/.env.example` for keys).  
+3. Add a Firebase service account key file path to the backend environment: set `FIREBASE_CREDENTIALS_FILE=/full/path/to/serviceAccountKey.json` (or set `FIREBASE_CREDENTIALS_JSON` to the JSON string).  
+4. Install dependencies after updating config:
+   - Backend: `pip install -r requirements.txt` (adds `firebase-admin`)
+   - Frontend: `npm install` (adds `firebase`)  
+5. Start the servers; the frontend will obtain an ID token from Firebase and send it to the FastAPI backend in the `Authorization: Bearer <token>` header.

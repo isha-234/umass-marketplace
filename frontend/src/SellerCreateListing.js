@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
+import { useAuth } from "./AuthContext";
 
 const CATEGORIES = [
   "Electronics",
@@ -16,8 +17,9 @@ const CATEGORIES = [
 
 const CONDITIONS = ["New", "Like New", "Good", "Fair"];
 
-export default function SellerCreateListing(props) {
+export default function SellerCreateListing() {
   const navigate = useNavigate();
+  const { user, idToken } = useAuth();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -35,6 +37,12 @@ export default function SellerCreateListing(props) {
   const [formErrors, setFormErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [serverMessage, setServerMessage] = useState("");
+
+  useEffect(() => {
+    if (user?.email) {
+      setFormData((prev) => ({ ...prev, contactEmail: prev.contactEmail || user.email }));
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -107,6 +115,11 @@ export default function SellerCreateListing(props) {
     if (Object.keys(errors).length > 0) return;
 
     try {
+      if (!idToken) {
+        setServerMessage("You need to be signed in to create a listing.");
+        return;
+      }
+
       setSubmitting(true);
       const fd = new FormData();
       fd.append("title", formData.title.trim());
@@ -122,9 +135,16 @@ export default function SellerCreateListing(props) {
         fd.append("images", file, file.name || `image_${idx}.jpg`)
       );
       const url = "http://127.0.0.1:8000/listing/insert";
-      const res = await axios.post(url, fd, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await axios.post(
+        url,
+        fd,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      );
 
       if (res.status === 200 || res.status === 201) {
         setServerMessage("Listing created successfully.");

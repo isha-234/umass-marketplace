@@ -53,4 +53,3 @@ async def get_conditions():
     conditions = await items_collection.distinct("condition")
     cleaned = sorted({c for c in conditions if c})
     return {"conditions": cleaned}
-
