@@ -4,15 +4,6 @@
 
 /* let App.css handle global body background if you want; 
    keep a light UMass background here */
-body {
-  font-family: "Montserrat", sans-serif;
-  background: var(--umass-ivory);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
 
 .container {
   background: #fff;
