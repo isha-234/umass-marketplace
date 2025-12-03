@@ -1,10 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./AuthLogin.css";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
+import { useAuth } from "./AuthContext";
 
 export default function AuthLogin() {
   const [isSignUp, setIsSignUp] = useState(false);
+  const { user, loading, isVerified } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && user && isVerified) {
+      navigate("/home", { replace: true });
+    }
+  }, [loading, user, isVerified, navigate]);
 
   return (
     <div className={`container ${isSignUp ? "right-panel-active" : ""}`}>
