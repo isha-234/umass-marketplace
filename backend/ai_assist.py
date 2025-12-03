@@ -16,7 +16,7 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 router = APIRouter()
 
-MODEL = "gemini-2.0-flash"   # or "gemini-2.5-flash-lite"
+MODEL = "gemini-2.0-flash"   
 
 
 @router.post("/ai-assist")
@@ -27,13 +27,13 @@ async def ai_assist(
     condition: str = Form(""),
     deliveryOption: str = Form(""),
     location: str = Form(""),
-    currentDescription: str = Form(""),  # we won't send this to the model
+    currentDescription: str = Form(""),  
     images: Optional[List[UploadFile]] = File(None),
 ):
     images = images or []
     num_photos = len(images)
 
-    # 🔴 IMPORTANT: do NOT put currentDescription in the details we send
+
     details = [
         f"Item title: {title}" if title else "",
         f"Item category: {category}" if category else "",
@@ -63,7 +63,7 @@ Important rules (you MUST follow these):
 - Start your text with the word "is".
 - Do NOT introduce a different item (no 'desk lamp', 'calculator', etc.).
 - Do NOT use brand or model names that are not given.
-- 1–3 sentences total, max ~60 words.
+- 1–3 sentences total, max ~50 words.
 - Plain text only, no headings, no bullet points, no markdown.
 
 Use these structured fields as context:
@@ -77,7 +77,7 @@ Write ONLY the continuation starting with "is ...", nothing else.
         response = model.generate_content(
             prompt,
             generation_config={
-                "temperature": 0.25,      # less creativity, more obedience
+                "temperature": 0.25,   
                 "max_output_tokens": 200,
             },
         )
