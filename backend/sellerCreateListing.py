@@ -1,8 +1,9 @@
 from fastapi import APIRouter, UploadFile, File, Form, Depends
 from fastapi.responses import JSONResponse
+from pymongo import MongoClient
 from dotenv import load_dotenv
-from pathlib import Path
-from datetime import datetime
+from bson.objectid import ObjectId
+import os
 import time
 import shutil
 from database import get_items_collection
@@ -11,15 +12,27 @@ from auth import get_current_user
 # Load environment variables
 load_dotenv()
 
-items_collection = get_items_collection()
+app = FastAPI()
 
-# Ensure upload directory exists alongside backend code
-UPLOAD_DIR = Path(__file__).resolve().parent / "uploaded_images"
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # React frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-router = APIRouter()
+MONGO_URI = os.getenv("MONGODB_URI")
+DB_NAME = os.getenv("MONGODB_DB")
+client = MongoClient(MONGO_URI)
+db = client[DB_NAME]
+collection = db["items"]
 
-@router.post("/listing/insert")
+UPLOAD_DIR = "uploaded_images"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+app.mount("/uploaded_images", StaticFiles(directory=UPLOAD_DIR), name="uploaded_images")
+
+@app.post("/listing/insert")
 async def submit_item(
     title: str = Form(...),
     price: float = Form(...),
@@ -39,8 +52,8 @@ async def submit_item(
     # Save images to disk
     for img in images:
         filename = f"{int(time.time())}_{img.filename}"
-        file_path = UPLOAD_DIR / filename
-        with file_path.open("wb") as buffer:
+        file_path = os.path.join(UPLOAD_DIR, filename)
+        with open(file_path, "wb") as buffer:
             shutil.copyfileobj(img.file, buffer)
         image_paths.append(f"/uploaded_images/{filename}")  # relative path for serving
 
@@ -60,6 +73,17 @@ async def submit_item(
         "ownerUid": user.get("uid"),
     }
 
-    # Motor returns a coroutine; await it to get the InsertOneResult
-    result = await items_collection.insert_one(document)
-    return {"status": "success", "id": str(result.inserted_id), "title": title, "images": image_paths}
+    collection.insert_one(document)
+    return {"status": "success", "title": title, "images": image_paths}
+
+@app.get("/listing/all")
+def get_all_listings():
+    listings = list(collection.find())
+    # Convert ObjectId to string for JSON
+    for l in listings:
+        l["_id"] = str(l["_id"])
+    return JSONResponse(content=listings)
+
+@app.get("/")
+def root():
+    return {"message": "Backend is running!"}

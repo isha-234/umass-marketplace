@@ -4,6 +4,7 @@ import SellerCreateListing from "./SellerCreateListing";
 import Listings from "./Listings";
 import AuthLogin from "./AuthLogin";
 import HomePage from "./HomePage";
+import Events from "./Events";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "./AuthContext";
 import "./App.css";
@@ -25,23 +26,17 @@ function Navbar() {
         </Link>
 
         <div className="topbar-actions">
-          <Link
-            className="topbar-btn topbar-btn-outline"
-            to="/home"
-          >
+          <Link className="topbar-btn topbar-btn-outline" to="/home">
             Home
           </Link>
-          <Link
-            className="topbar-btn topbar-btn-primary"
-            to="/sell/new"
-          >
+          <Link className="topbar-btn topbar-btn-primary" to="/sell/new">
             Create Listing
           </Link>
-          <Link
-            className="topbar-btn topbar-btn-outline"
-            to="/listings"
-          >
+          <Link className="topbar-btn topbar-btn-outline" to="/listings">
             View Listings
+          </Link>
+          <Link className="topbar-btn topbar-btn-outline" to="/events">
+            Events
           </Link>
           {user && isVerified ? (
             <>
@@ -61,8 +56,8 @@ function Navbar() {
   );
 }
 
-
 function App() {
+  const { user } = useAuth();
   const location = useLocation();
   const hideNavbar = location.pathname === "/auth";
 
@@ -72,8 +67,13 @@ function App() {
 
       <main className="app-main">
         <Routes>
+          {/* Redirect / based on login status */}
+          <Route path="/" element={user ? <Navigate to="/home" /> : <Navigate to="/auth" />} />
+
+          {/* Auth route */}
           <Route path="/auth" element={<AuthLogin />} />
-          <Route path="/" element={<Navigate to="/auth" />} />
+
+          {/* Protected HomePage */}
           <Route
             path="/home"
             element={
@@ -82,12 +82,26 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Listings */}
           <Route path="/listings" element={<Listings />} />
+
+          {/* Protected Create Listing */}
           <Route
             path="/sell/new"
             element={
               <ProtectedRoute>
                 <SellerCreateListing />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Protected Events page */}
+          <Route
+            path="/events"
+            element={
+              <ProtectedRoute>
+                <Events />
               </ProtectedRoute>
             }
           />
