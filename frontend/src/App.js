@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Routes, Route, Navigate, useLocation, Link, useNavigate } from "react-router-dom";
 import SellerCreateListing from "./SellerCreateListing";
 import Listings from "./Listings";
@@ -7,6 +7,7 @@ import HomePage from "./HomePage";
 // import Events from "./Events";
 import ProfileMenu from "./ProfileMenu";
 import MyListings from "./MyListings";
+import MessagesDrawer from "./MessagesDrawer";
 import DraftListings from "./DraftListings";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "./AuthContext";
@@ -16,56 +17,83 @@ function Navbar() {
   const { user, logout, isVerified } = useAuth();
   const navigate = useNavigate();
 
+  const [messagesOpen, setMessagesOpen] = useState(false);
+
   const handleLogout = async () => {
     await logout();
     navigate("/auth", { replace: true });
   };
 
   return (
-    <nav className="topbar">
-      <div className="topbar-inner">
-        <Link className="topbar-brand" to="/home">
-          UMass Marketplace
-        </Link>
-
-        <div className="topbar-actions">
-          <Link
-            className="topbar-btn topbar-btn-outline"
-            to="/home"
-          >
-            Home
-          </Link>
-          <Link
-            className="topbar-btn topbar-btn-primary"
-            to="/sell/new"
-          >
-            Create Listing
-          </Link>
-          <Link
-            className="topbar-btn topbar-btn-outline"
-            to="/listings"
-          >
-            View Listings
+    <>
+      <nav className="topbar">
+        <div className="topbar-inner">
+          <Link className="topbar-brand" to="/home">
+            UMass Marketplace
           </Link>
 
-          <Link className="topbar-btn topbar-btn-outline" to="/events">
-            Events
-          </Link>
-</div>
-          <ProfileMenu /> </div>
-    </nav>
+          <div className="topbar-actions">
+            <Link className="topbar-btn topbar-btn-outline" to="/home">
+              Home
+            </Link>
+
+            <Link className="topbar-btn topbar-btn-primary" to="/sell/new">
+              Create Listing
+            </Link>
+
+            <Link className="topbar-btn topbar-btn-outline" to="/listings">
+              View Listings
+            </Link>
+
+            <Link className="topbar-btn topbar-btn-outline" to="/events">
+              Events
+            </Link>
+
+            {user && isVerified ? (
+              <>
+                {/* My Messages button */}
+                <button
+                    type="button"
+                    className="topbar-btn topbar-btn-outline"
+                    style={{ textTransform: "none" }}
+                    onClick={() => setMessagesOpen(true)}
+                  >
+                    My Messages
+                </button>
+
+
+                {/* Profile menu (avatar / dropdown, etc.) */}
+                <ProfileMenu />
+              </>
+            ) : (
+              <Link className="topbar-btn topbar-btn-outline" to="/auth">
+                Log In
+              </Link>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      {/* Drawer mounted next to navbar so it overlays the app */}
+      {user && isVerified && (
+        <MessagesDrawer
+          open={messagesOpen}
+          onClose={() => setMessagesOpen(false)}
+          currentUserEmail={user.email}
+        />
+      )}
+    </>
   );
 }
+
 
 
 function App() {
   const location = useLocation();
   const hideNavbar = location.pathname === "/auth";
-
   return (
     <>
       {!hideNavbar && <Navbar />}
-
       <main className="app-main">
         <Routes>
           <Route path="/auth" element={<AuthLogin />} />
@@ -87,10 +115,8 @@ function App() {
               </ProtectedRoute>
             }
           />
-
      
           <Route path="/sell/new" element={<SellerCreateListing />} />
-
           <Route path="/my-listings" element={<MyListings />} />
           <Route path="/draft-listings" element={<DraftListings />} />
    </Routes>
@@ -98,5 +124,4 @@ function App() {
     </>
   );
 }
-
 export default App;

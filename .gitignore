@@ -9,6 +9,7 @@ __pycache__/
 backend/myenv/
 venv/
 env/
+backend/serviceAccountKey.json
 
 # Node
 node_modules/

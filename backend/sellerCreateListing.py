@@ -8,7 +8,7 @@ import shutil
 from database import get_items_collection
 from auth import get_current_user
 
-# Load environment variables
+
 load_dotenv()
 
 items_collection = get_items_collection()
