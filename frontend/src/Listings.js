@@ -1,6 +1,9 @@
+// src/Listings.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Listings.css";
+import ChatModal from "./ChatModal";
+import { getAuth } from "firebase/auth";
 
 const BACKEND_URL = "http://127.0.0.1:8000";
 
@@ -17,7 +20,30 @@ export default function Listings() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedImage, setSelectedImage] = useState("");
 
-  // Fetch categories once for the filter dropdown
+  // Chat-related state
+  const [conversationId, setConversationId] = useState(null);
+  const [chatOpen, setChatOpen] = useState(false);
+
+  // Axios instance with Firebase auth header
+  const getAuthAxios = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) {
+      throw new Error("Not logged in");
+    }
+
+    const token = await user.getIdToken();
+
+    return axios.create({
+      baseURL: BACKEND_URL,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  };
+
+  // Fetch categories once
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -31,7 +57,7 @@ export default function Listings() {
     fetchCategories();
   }, []);
 
-  // Fetch conditions once for the filter dropdown
+  // Fetch conditions once
   useEffect(() => {
     const fetchConditions = async () => {
       try {
@@ -45,8 +71,10 @@ export default function Listings() {
     fetchConditions();
   }, []);
 
+  // Fetch listings whenever filters/search/sort change
   useEffect(() => {
     let active = true;
+
     const fetchListings = async () => {
       try {
         setLoading(true);
@@ -60,6 +88,7 @@ export default function Listings() {
         });
         if (!active) return;
         setItems(res.data);
+        setError("");
       } catch (err) {
         if (!active) return;
         console.error("Error fetching listings:", err);
@@ -68,13 +97,14 @@ export default function Listings() {
         if (active) setLoading(false);
       }
     };
+
     fetchListings();
     return () => {
       active = false;
     };
   }, [search, category, condition, sort]);
 
-  // Close modal on Escape
+  // Close details modal on Escape key
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.key === "Escape") setSelectedItem(null);
@@ -88,9 +118,34 @@ export default function Listings() {
     setSelectedImage(item.images?.[0] ? `${BACKEND_URL}${item.images[0]}` : "");
   };
 
+  // Start or reuse a conversation for this listing
+  const handleContactSeller = async (item, e) => {
+    if (e) e.stopPropagation();
+
+    try {
+      const ax = await getAuthAxios();
+      const res = await ax.post("/conversations/start", {
+        listing_id: item._id,
+      });
+
+      setConversationId(res.data.id);
+      setChatOpen(true);
+    } catch (err) {
+      console.error("Error starting conversation:", err);
+
+      let msg = "Could not start chat. Please make sure you are logged in.";
+      if (err.message === "Not logged in") {
+        msg = "Please log in to contact the seller.";
+      } else if (err.response?.data?.detail) {
+        msg = err.response.data.detail;
+      }
+      alert(msg);
+    }
+  };
+
   return (
     <div className="listings-page">
-      
+      {/* Hero */}
       <section className="listings-hero">
         <div className="hero-content">
           <p className="eyebrow">Marketplace</p>
@@ -115,6 +170,7 @@ export default function Listings() {
         </div>
       </section>
 
+      {/* Filters + Grid */}
       <section className="listings-grid-section">
         <div className="filter-bar">
           <input
@@ -123,7 +179,10 @@ export default function Listings() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <select value={category || ""} onChange={(e) => setCategory(e.target.value)}>
+          <select
+            value={category || ""}
+            onChange={(e) => setCategory(e.target.value)}
+          >
             <option value="">Category</option>
             {categoryOptions.map((cat) => (
               <option key={cat} value={cat}>
@@ -131,7 +190,10 @@ export default function Listings() {
               </option>
             ))}
           </select>
-          <select value={condition || ""} onChange={(e) => setCondition(e.target.value)}>
+          <select
+            value={condition || ""}
+            onChange={(e) => setCondition(e.target.value)}
+          >
             <option value="">Condition</option>
             {conditionOptions.map((cond) => (
               <option key={cond} value={cond}>
@@ -154,8 +216,12 @@ export default function Listings() {
 
         <div className="listings-grid">
           {items.map((item) => (
-            <article key={item._id} className="listing-card" onClick={() => openDetails(item)}>
-              <div className="image-wrapper clickable" >
+            <article
+              key={item._id}
+              className="listing-card"
+              onClick={() => openDetails(item)}
+            >
+              <div className="image-wrapper clickable">
                 {item.images?.[0] ? (
                   <img
                     src={`${BACKEND_URL}${item.images[0]}`}
@@ -192,16 +258,35 @@ export default function Listings() {
                   <span>{item.contactEmail}</span>
                   <span>{item.contactPhone}</span>
                 </div>
+
+                <div className="card-actions">
+                  <button
+                    className="btn-primary-sm"
+                    onClick={(e) => handleContactSeller(item, e)}
+                  >
+                    Contact seller
+                  </button>
+                </div>
               </div>
             </article>
           ))}
         </div>
       </section>
 
+      {/* Details Modal */}
       {selectedItem && (
-        <div className="modal-overlay" onClick={() => setSelectedItem(null)}>
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setSelectedItem(null)}>
+        <div
+          className="modal-overlay"
+          onClick={() => setSelectedItem(null)}
+        >
+          <div
+            className="modal-card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="close-btn"
+              onClick={() => setSelectedItem(null)}
+            >
               ×
             </button>
             <div className="modal-content">
@@ -249,10 +334,29 @@ export default function Listings() {
                   <span>{selectedItem.contactEmail}</span>
                   <span>{selectedItem.contactPhone}</span>
                 </div>
+
+                <div className="modal-actions">
+                  <button
+                    className="btn-primary"
+                    onClick={(e) => handleContactSeller(selectedItem, e)}
+                  >
+                    Contact seller
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Chat Modal */}
+      {conversationId && (
+        <ChatModal
+          open={chatOpen}
+          onClose={() => setChatOpen(false)}
+          conversationId={conversationId}
+          listing={selectedItem}
+        />
       )}
     </div>
   );

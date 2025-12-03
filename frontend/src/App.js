@@ -1,16 +1,27 @@
-import React from "react";
-import { Routes, Route, Navigate, useLocation, Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  Link,
+  useNavigate,
+} from "react-router-dom";
 import SellerCreateListing from "./SellerCreateListing";
 import Listings from "./Listings";
 import AuthLogin from "./AuthLogin";
 import HomePage from "./HomePage";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "./AuthContext";
-import "./App.css";
+import MessagesDrawer from "./MessagesDrawer";   // 👈 NEW
+import "./App.css";      // rest of app styles
 
 function Navbar() {
   const { user, logout, isVerified } = useAuth();
   const navigate = useNavigate();
+
+  // 👇 NEW: My Messages drawer state
+  const [messagesOpen, setMessagesOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -18,49 +29,66 @@ function Navbar() {
   };
 
   return (
-    <nav className="topbar">
-      <div className="topbar-inner">
-        <Link className="topbar-brand" to="/home">
-          UMass Marketplace
-        </Link>
+    <>
+      <nav className="topbar">
+        <div className="topbar-inner">
+          <Link className="topbar-brand" to="/home">
+            UMass Marketplace
+          </Link>
 
-        <div className="topbar-actions">
-          <Link
-            className="topbar-btn topbar-btn-outline"
-            to="/home"
-          >
-            Home
-          </Link>
-          <Link
-            className="topbar-btn topbar-btn-primary"
-            to="/sell/new"
-          >
-            Create Listing
-          </Link>
-          <Link
-            className="topbar-btn topbar-btn-outline"
-            to="/listings"
-          >
-            View Listings
-          </Link>
-          {user && isVerified ? (
-            <>
-              <span className="topbar-user">{user.email}</span>
-              <button className="topbar-btn topbar-btn-outline" onClick={handleLogout}>
-                Sign Out
-              </button>
-            </>
-          ) : (
-            <Link className="topbar-btn topbar-btn-outline" to="/auth">
-              Log In
+          <div className="topbar-actions">
+            <Link className="topbar-btn topbar-btn-outline" to="/home">
+              Home
             </Link>
-          )}
+
+            <Link className="topbar-btn topbar-btn-primary" to="/sell/new">
+              Create Listing
+            </Link>
+
+            <Link className="topbar-btn topbar-btn-outline" to="/listings">
+              View Listings
+            </Link>
+
+            {user && isVerified ? (
+              <>
+                {/* 👇 NEW: My Messages button */}
+                <button
+                  type="button"
+                  className="topbar-btn topbar-btn-outline"
+                  onClick={() => setMessagesOpen(true)}
+                >
+                  My Messages
+                </button>
+
+                <span className="topbar-user">{user.email}</span>
+
+                <button
+                  className="topbar-btn topbar-btn-outline"
+                  onClick={handleLogout}
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <Link className="topbar-btn topbar-btn-outline" to="/auth">
+                Log In
+              </Link>
+            )}
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* 👇 Drawer is mounted here so it overlays the whole app */}
+      {user && isVerified && (
+        <MessagesDrawer
+          open={messagesOpen}
+          onClose={() => setMessagesOpen(false)}
+          currentUserEmail={user.email}
+        />
+      )}
+    </>
   );
 }
-
 
 function App() {
   const location = useLocation();
