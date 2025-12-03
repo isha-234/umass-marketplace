@@ -1,38 +1,95 @@
-.App {
-  text-align: center;
+:root {
+  --umass-red: #881c1c;
+  --umass-red-dark: #6e1414;
+  --umass-red-light: #fdf5f5;
+  --umass-accent: #b71c1c;
+  --umass-ivory: #faf6f5;
+  --umass-text: #2d2d2d;
+  --shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  --radius: 16px;
+  --transition: all 0.3s ease;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+
+body {
+  margin: 0;
+  font-family: "Poppins", "Lora", serif;
+  background: var(--umass-ivory);
+  color: var(--umass-text);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Navbar */
+
+/* Top navbar with UMass colors */
+.topbar {
+  width: 100%;
+  background: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* full width, no constraint */
+.topbar-inner {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: space-between;
 }
 
-.App-link {
-  color: #61dafb;
+
+.topbar-brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--umass-red); /* same as before */
+  text-decoration: none;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.topbar-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* pill buttons using UMass palette */
+.topbar-btn {
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+/* primary = solid UMass red */
+.topbar-btn-primary {
+  background: var(--umass-red);
+  border-color: var(--umass-red);
+  color: #ffffff;
+}
+
+.topbar-btn-primary:hover {
+  background: var(--umass-red-dark);
+  border-color: var(--umass-red-dark);
+}
+
+/* outline buttons with UMass red border */
+.topbar-btn-outline {
+  background: #ffffff;
+  border-color: var(--umass-red);
+  color: var(--umass-red);
+}
+
+.topbar-btn-outline:hover {
+  background: var(--umass-red-light);
+}
+
+.app-main {
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
