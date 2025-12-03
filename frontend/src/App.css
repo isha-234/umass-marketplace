@@ -22,20 +22,21 @@ body {
 
 /* Top navbar with UMass colors */
 .topbar {
-  width: 100vw;
+  width: 100%;
   background: #ffffff;
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 100;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 /* full width, no constraint */
 .topbar-inner {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
 }
 
 
