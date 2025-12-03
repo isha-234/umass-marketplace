@@ -47,21 +47,6 @@ function Navbar() {
           >
             View Listings
           </Link>
-          {user && isVerified ? (
-            <>
-              <span className="topbar-user">{user.email}</span>
-              <button className="topbar-btn topbar-btn-outline" onClick={handleLogout}>
-                Sign Out
-              </button>
-            </>
-          ) : (
-            <Link className="topbar-btn topbar-btn-outline" to="/auth">
-              Log In
-            </Link>
-          )}
-//          <Link className="topbar-btn topbar-btn-outline" to="/home">Home</Link>
-//          <Link className="topbar-btn topbar-btn-primary" to="/sell/new">Create Listing</Link>
-//          <Link className="topbar-btn topbar-btn-outline" to="/listings">View Listings</Link>
           <ProfileMenu />
         </div>
       </div>

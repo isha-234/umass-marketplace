@@ -19,6 +19,18 @@
   background: var(--umass-red-light); /* subtle hover like outline buttons */
   border-radius: 999px;
 }
+.profile-container {
+  display: flex;
+  align-items: center; /* Align email + icon in same row */
+  position: relative;
+}
+
+.profile-email {
+  margin-right: 0.6rem;
+  font-size: 0.9rem;
+  color: var(--umass-red);
+  font-weight: 500;
+}
 
 /* Dropdown menu */
 .profile-dropdown {

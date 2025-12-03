@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./Listings.css";
+import "./DraftListings.css";
+import { useAuth } from "./AuthContext";
 
 const BACKEND_URL = "http://127.0.0.1:8000";
 
@@ -10,9 +11,13 @@ export default function DraftListings() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedImage, setSelectedImage] = useState("");
 
-  const userEmail = "rosh@umass.edu";
+  // Pull logged-in email from AuthContext
+  const { user } = useAuth();
+  const userEmail = user?.email;
 
   useEffect(() => {
+    if (!userEmail) return;
+
     const load = async () => {
       try {
         const res = await axios.get(`${BACKEND_URL}/listing/user/drafts`, {
@@ -84,16 +89,67 @@ export default function DraftListings() {
       </section>
 
       {/* Modal */}
-      {selectedItem && (
-        <div className="modal-overlay" onClick={() => setSelectedItem(null)}>
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setSelectedItem(null)}>×</button>
-            <div className="modal-content">
-              Draft details here...
+    {selectedItem && (
+      <div className="modal-overlay" onClick={() => setSelectedItem(null)}>
+        <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+
+          <button className="close-btn" onClick={() => setSelectedItem(null)}>×</button>
+
+          <div className="modal-content">
+
+            <div className="modal-image">
+              {selectedImage ? (
+                <img src={selectedImage} alt={selectedItem.title} />
+              ) : (
+                <div className="image-placeholder">No photo</div>
+              )}
+
+              {selectedItem.images?.length > 1 && (
+                <div className="modal-thumbs">
+                  {selectedItem.images.map((img, idx) => {
+                    const url = `${BACKEND_URL}${img}`;
+                    return (
+                      <img
+                        key={idx}
+                        src={url}
+                        alt={`thumb-${idx}`}
+                        className={url === selectedImage ? "active" : ""}
+                        onClick={() => setSelectedImage(url)}
+                      />
+                    );
+                  })}
+                </div>
+              )}
             </div>
+
+            <div className="modal-details">
+              <div className="modal-header">
+                <h2>{selectedItem.title}</h2>
+                <span className="price">${selectedItem.price}</span>
+              </div>
+
+              <p className="meta">
+                {selectedItem.category} • {selectedItem.condition}
+              </p>
+
+              <p className="description">{selectedItem.description}</p>
+
+              <div className="detail-grid">
+                <div><strong>Location:</strong> {selectedItem.location}</div>
+                <div><strong>Delivery:</strong> {selectedItem.deliveryOption}</div>
+              </div>
+
+              <div className="contact">
+                <span>{selectedItem.contactEmail}</span>
+                <span>{selectedItem.contactPhone}</span>
+              </div>
+            </div>
+
           </div>
         </div>
-      )}
+      </div>
+    )}
+
     </div>
   );
 }
