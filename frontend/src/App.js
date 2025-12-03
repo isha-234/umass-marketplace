@@ -4,11 +4,14 @@ import SellerCreateListing from "./SellerCreateListing";
 import Listings from "./Listings";
 import AuthLogin from "./AuthLogin";
 import HomePage from "./HomePage";
+<<<<<<< HEAD
 import Events from "./Events";
 import ProfileMenu from "./ProfileMenu";
 import MyListings from "./MyListings";
 import DraftListings from "./DraftListings";
 
+=======
+>>>>>>> parent of ff8aef4 (Merge pull request #8 from isha-234/tasmiya-adding-events-page)
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "./AuthContext";
 import "./App.css";
@@ -48,10 +51,25 @@ function Navbar() {
           >
             View Listings
           </Link>
+<<<<<<< HEAD
           <Link className="topbar-btn topbar-btn-outline" to="/events">
             Events
           </Link>
           <ProfileMenu />
+=======
+          {user && isVerified ? (
+            <>
+              <span className="topbar-user">{user.email}</span>
+              <button className="topbar-btn topbar-btn-outline" onClick={handleLogout}>
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <Link className="topbar-btn topbar-btn-outline" to="/auth">
+              Log In
+            </Link>
+          )}
+>>>>>>> parent of ff8aef4 (Merge pull request #8 from isha-234/tasmiya-adding-events-page)
         </div>
       </div>
     </nav>
@@ -60,7 +78,6 @@ function Navbar() {
 
 
 function App() {
-  const { user } = useAuth();
   const location = useLocation();
   const hideNavbar = location.pathname === "/auth";
 
@@ -70,13 +87,8 @@ function App() {
 
       <main className="app-main">
         <Routes>
-          {/* Redirect / based on login status */}
-          <Route path="/" element={user ? <Navigate to="/home" /> : <Navigate to="/auth" />} />
-
-          {/* Auth route */}
           <Route path="/auth" element={<AuthLogin />} />
-
-          {/* Protected HomePage */}
+          <Route path="/" element={<Navigate to="/auth" />} />
           <Route
             path="/home"
             element={
@@ -85,11 +97,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-
-          {/* Listings */}
           <Route path="/listings" element={<Listings />} />
-
-          {/* Protected Create Listing */}
           <Route
             path="/sell/new"
             element={
@@ -98,6 +106,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+<<<<<<< HEAD
 
           {/* Protected Events page */}
           <Route
@@ -112,6 +121,8 @@ function App() {
 
           <Route path="/my-listings" element={<MyListings />} />
           <Route path="/draft-listings" element={<DraftListings />} />
+=======
+>>>>>>> parent of ff8aef4 (Merge pull request #8 from isha-234/tasmiya-adding-events-page)
         </Routes>
       </main>
     </>
