@@ -45,6 +45,7 @@ async def submit_item(
     contactPhone: str = Form(...),
     images: list[UploadFile] = File(...),
     user=Depends(get_current_user),
+    status: str = Form(...)
 ):
     image_paths: list[str] = []
     contactEmail = contactEmail or user.get("email", "")
@@ -69,6 +70,7 @@ async def submit_item(
         "contactEmail": contactEmail,
         "contactPhone": contactPhone,
         "images": image_paths,  # store file paths, not base64
+        "status": status,
         "createdAt": datetime.utcnow(),
         "ownerUid": user.get("uid"),
     }

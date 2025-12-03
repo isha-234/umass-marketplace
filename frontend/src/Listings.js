@@ -17,13 +17,15 @@ export default function Listings() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedImage, setSelectedImage] = useState("");
 
-  // Fetch categories once for the filter dropdown
+  /* =============================
+     FETCH CATEGORIES + CONDITIONS
+     ============================= */
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const res = await axios.get(`${BACKEND_URL}/listing/categories`);
-        const cats = res.data?.categories ?? [];
-        setCategoryOptions(cats);
+        setCategoryOptions(res.data?.categories ?? []);
       } catch (err) {
         console.error("Error fetching categories:", err);
       }
@@ -31,13 +33,11 @@ export default function Listings() {
     fetchCategories();
   }, []);
 
-  // Fetch conditions once for the filter dropdown
   useEffect(() => {
     const fetchConditions = async () => {
       try {
         const res = await axios.get(`${BACKEND_URL}/listing/conditions`);
-        const conds = res.data?.conditions ?? [];
-        setConditionOptions(conds);
+        setConditionOptions(res.data?.conditions ?? []);
       } catch (err) {
         console.error("Error fetching conditions:", err);
       }
@@ -45,8 +45,13 @@ export default function Listings() {
     fetchConditions();
   }, []);
 
+  /* =============================
+     FETCH LISTINGS
+     ============================= */
+
   useEffect(() => {
     let active = true;
+
     const fetchListings = async () => {
       try {
         setLoading(true);
@@ -58,6 +63,7 @@ export default function Listings() {
             sort,
           },
         });
+
         if (!active) return;
         setItems(res.data);
       } catch (err) {
@@ -68,13 +74,24 @@ export default function Listings() {
         if (active) setLoading(false);
       }
     };
+
     fetchListings();
+
     return () => {
       active = false;
     };
   }, [search, category, condition, sort]);
 
-  // Close modal on Escape
+  /* =============================
+     FILTER PUBLISHED ITEMS
+     ============================= */
+  const publishedItems = items.filter(
+    (item) => item.status === "published"
+  );
+
+  /* =============================
+     ESC closes modal
+     ============================= */
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.key === "Escape") setSelectedItem(null);
@@ -85,25 +102,35 @@ export default function Listings() {
 
   const openDetails = (item) => {
     setSelectedItem(item);
-    setSelectedImage(item.images?.[0] ? `${BACKEND_URL}${item.images[0]}` : "");
+    setSelectedImage(
+      item.images?.[0] ? `${BACKEND_URL}${item.images[0]}` : ""
+    );
   };
+
+  /* =============================
+     RENDER
+     ============================= */
 
   return (
     <div className="listings-page">
-      
+
+      {/* ======== HERO ======== */}
       <section className="listings-hero">
         <div className="hero-content">
           <p className="eyebrow">Marketplace</p>
           <h1>Fresh finds from your campus</h1>
+
           <p className="subtitle">
             Browse everything students are selling right now—tech, books,
             furniture, and more.
           </p>
+
           <div className="hero-stats">
-            <span>{items.length} listings</span>
+            <span>{publishedItems.length} listings</span>
             <span>Updated live</span>
           </div>
         </div>
+
         <div className="hero-card">
           <div className="hero-badge">Buy & Sell</div>
           <p className="hero-note">
@@ -115,7 +142,9 @@ export default function Listings() {
         </div>
       </section>
 
+      {/* ======== GRID SECTION ======== */}
       <section className="listings-grid-section">
+        {/* ==== FILTER BAR ==== */}
         <div className="filter-bar">
           <input
             type="search"
@@ -123,7 +152,8 @@ export default function Listings() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <select value={category || ""} onChange={(e) => setCategory(e.target.value)}>
+
+          <select value={category} onChange={(e) => setCategory(e.target.value)}>
             <option value="">Category</option>
             {categoryOptions.map((cat) => (
               <option key={cat} value={cat}>
@@ -131,7 +161,8 @@ export default function Listings() {
               </option>
             ))}
           </select>
-          <select value={condition || ""} onChange={(e) => setCondition(e.target.value)}>
+
+          <select value={condition} onChange={(e) => setCondition(e.target.value)}>
             <option value="">Condition</option>
             {conditionOptions.map((cond) => (
               <option key={cond} value={cond}>
@@ -139,6 +170,7 @@ export default function Listings() {
               </option>
             ))}
           </select>
+
           <select value={sort} onChange={(e) => setSort(e.target.value)}>
             <option value="newest">Newest</option>
             <option value="price_desc">Price: High to Low</option>
@@ -146,16 +178,22 @@ export default function Listings() {
           </select>
         </div>
 
+        {/* ==== MESSAGES ==== */}
         {loading && <div className="muted">Loading listings…</div>}
         {error && <div className="error">{error}</div>}
-        {!loading && !error && items.length === 0 && (
+        {!loading && !error && publishedItems.length === 0 && (
           <div className="muted">No listings yet. Be the first to post!</div>
         )}
 
+        {/* ==== LISTINGS GRID ==== */}
         <div className="listings-grid">
-          {items.map((item) => (
-            <article key={item._id} className="listing-card" onClick={() => openDetails(item)}>
-              <div className="image-wrapper clickable" >
+          {publishedItems.map((item) => (
+            <article
+              key={item._id}
+              className="listing-card"
+              onClick={() => openDetails(item)}
+            >
+              <div className="image-wrapper clickable">
                 {item.images?.[0] ? (
                   <img
                     src={`${BACKEND_URL}${item.images[0]}`}
@@ -171,9 +209,11 @@ export default function Listings() {
                   <h3>{item.title}</h3>
                   <span className="price">${item.price}</span>
                 </div>
+
                 <p className="meta">
                   {item.category} • {item.condition}
                 </p>
+
                 <p className="description">{item.description}</p>
 
                 {item.images?.length > 1 && (
@@ -198,12 +238,23 @@ export default function Listings() {
         </div>
       </section>
 
+      {/* ======== MODAL ======== */}
       {selectedItem && (
-        <div className="modal-overlay" onClick={() => setSelectedItem(null)}>
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setSelectedItem(null)}>
+        <div
+          className="modal-overlay"
+          onClick={() => setSelectedItem(null)}
+        >
+          <div
+            className="modal-card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="close-btn"
+              onClick={() => setSelectedItem(null)}
+            >
               ×
             </button>
+
             <div className="modal-content">
               <div className="modal-image">
                 {selectedImage ? (
@@ -211,6 +262,7 @@ export default function Listings() {
                 ) : (
                   <div className="image-placeholder">No photo</div>
                 )}
+
                 {selectedItem.images?.length > 1 && (
                   <div className="modal-thumbs">
                     {selectedItem.images.map((img, idx) => {
@@ -220,7 +272,9 @@ export default function Listings() {
                           key={idx}
                           src={url}
                           alt={`thumb-${idx}`}
-                          className={url === selectedImage ? "active" : ""}
+                          className={
+                            url === selectedImage ? "active" : ""
+                          }
                           onClick={() => setSelectedImage(url)}
                         />
                       );
@@ -228,15 +282,19 @@ export default function Listings() {
                   </div>
                 )}
               </div>
+
               <div className="modal-details">
                 <div className="modal-header">
                   <h2>{selectedItem.title}</h2>
                   <span className="price">${selectedItem.price}</span>
                 </div>
+
                 <p className="meta">
                   {selectedItem.category} • {selectedItem.condition}
                 </p>
+
                 <p className="description">{selectedItem.description}</p>
+
                 <div className="detail-grid">
                   <div>
                     <strong>Location:</strong> {selectedItem.location}
@@ -245,6 +303,7 @@ export default function Listings() {
                     <strong>Delivery:</strong> {selectedItem.deliveryOption}
                   </div>
                 </div>
+
                 <div className="contact">
                   <span>{selectedItem.contactEmail}</span>
                   <span>{selectedItem.contactPhone}</span>
