@@ -1,17 +1,21 @@
 from fastapi import FastAPI
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
+# from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
+
+# Load backend/.env before importing modules that depend on FIREBASE_CREDENTIALS_FILE
+# env_path = Path(__file__).resolve().parent / ".env"
+# load_dotenv(env_path)
+load_dotenv()
 
 from auth import router as auth_router
 from sellerCreateListing import router as seller_router, UPLOAD_DIR
 from ViewListings import router as view_listings_router
 from ai_assist import router as ai_assist_router
 import os
-
-load_dotenv()
 app = FastAPI()
 
 app.add_middleware(

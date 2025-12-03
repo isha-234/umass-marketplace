@@ -1,15 +1,11 @@
-from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from firebase_admin import auth as firebase_auth
 
-from database import get_users_collection
 from firebase_admin_setup import initialize_firebase_app
 
 router = APIRouter()
 security = HTTPBearer(auto_error=False)
-users_collection = get_users_collection()
 
 initialize_firebase_app()
 
@@ -42,24 +38,6 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Email not verified",
         )
-
-    email = decoded.get("email")
-    user_doc = await users_collection.find_one({"uid": uid}) or (
-        await users_collection.find_one({"email": email}) if email else None
-    )
-    # Lazily create or refresh the user record so Mongo mirrors Firebase.
-    upsert_doc = {
-        "uid": uid,
-        "email": email,
-        "name": decoded.get("name") or decoded.get("email"),
-        "emailVerified": decoded.get("email_verified", False),
-        "lastLoginAt": datetime.utcnow(),
-    }
-    if not user_doc:
-        upsert_doc["createdAt"] = datetime.utcnow()
-        await users_collection.insert_one(upsert_doc)
-    else:
-        await users_collection.update_one({"_id": user_doc["_id"]}, {"$set": upsert_doc})
 
     return decoded
 
