@@ -18,14 +18,12 @@ conversations_collection = get_conversations_collection()
 messages_collection = get_messages_collection()
 
 
-# ---------- Pydantic models ----------
-
 class ConversationOut(BaseModel):
     id: str
     listingId: str
     listingTitle: Optional[str] = None
-    buyerId: str          # buyer email
-    sellerId: str         # seller email (from listing.contactEmail)
+    buyerId: str          
+    sellerId: str       
     lastMessageText: Optional[str] = None
     lastMessageAt: Optional[datetime] = None
     createdAt: datetime
@@ -35,7 +33,7 @@ class ConversationOut(BaseModel):
 class MessageOut(BaseModel):
     id: str
     conversationId: str
-    senderId: str         # email of buyer or seller
+    senderId: str        
     text: str
     createdAt: datetime
 
@@ -51,8 +49,6 @@ class SendMessageBody(BaseModel):
 def oid_str(oid) -> str:
     return str(oid) if isinstance(oid, ObjectId) else str(oid)
 
-
-# ---------- 1. Start or get conversation ----------
 
 @router.post("/conversations/start", response_model=ConversationOut)
 async def start_conversation(
@@ -82,14 +78,13 @@ async def start_conversation(
     if not seller_email:
         raise HTTPException(status_code=500, detail="Listing missing contactEmail")
 
-    # prevent chat with own listing (same email)
+
     if seller_email == buyer_email:
         raise HTTPException(
             status_code=400,
             detail="You cannot start a conversation with your own listing.",
         )
 
-    # check if conversation already exists for this buyer + listing
     existing = await conversations_collection.find_one(
         {"listingId": listing_id, "buyerId": buyer_email}
     )
@@ -109,7 +104,6 @@ async def start_conversation(
             updatedAt=existing.get("updatedAt", now),
         )
 
-    # create new conversation
     doc = {
         "listingId": listing_id,
         "buyerId": buyer_email,
@@ -134,8 +128,6 @@ async def start_conversation(
     )
 
 
-# ---------- 2. Get all conversations for current user ----------
-
 @router.get("/conversations", response_model=List[ConversationOut])
 async def get_my_conversations(user: dict = Depends(get_current_user)):
     """
@@ -158,7 +150,6 @@ async def get_my_conversations(user: dict = Depends(get_current_user)):
 
     conv_docs = await cursor.to_list(length=None)
 
-    # pull listing titles
     listing_ids = list({d["listingId"] for d in conv_docs})
     listing_objs = await items_collection.find(
         {"_id": {"$in": [ObjectId(lid) for lid in listing_ids if ObjectId.is_valid(lid)]}}
@@ -187,8 +178,6 @@ async def get_my_conversations(user: dict = Depends(get_current_user)):
 
     return result
 
-
-# ---------- 3. Get messages in a conversation ----------
 
 @router.get(
     "/conversations/{conversation_id}/messages",
@@ -232,9 +221,6 @@ async def get_messages(
         for d in docs
     ]
 
-
-# ---------- 4. Send a message in a conversation ----------
-
 @router.post(
     "/conversations/{conversation_id}/messages",
     response_model=MessageOut,
@@ -264,22 +250,20 @@ async def send_message(
     if not conv:
         raise HTTPException(status_code=404, detail="Conversation not found")
 
-    # user must be part of this conversation
     if user_email not in (conv["buyerId"], conv["sellerId"]):
         raise HTTPException(status_code=403, detail="Not allowed")
 
     now = datetime.utcnow()
 
     msg_doc = {
-        "conversationId": conversation_id,  # store as string
-        "senderId": user_email,             # email of buyer or seller
+        "conversationId": conversation_id,  
+        "senderId": user_email,             
         "text": text,
         "createdAt": now,
     }
     result = await messages_collection.insert_one(msg_doc)
     msg_id = oid_str(result.inserted_id)
 
-    # update conversation last message
     await conversations_collection.update_one(
         {"_id": ObjectId(conversation_id)},
         {

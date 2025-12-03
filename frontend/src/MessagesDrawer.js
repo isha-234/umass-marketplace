@@ -1,4 +1,3 @@
-// src/MessagesDrawer.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
@@ -29,7 +28,6 @@ export default function MessagesDrawer({ open, onClose, currentUserEmail }) {
   const [messages, setMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
 
-  // Load conversation list
   useEffect(() => {
     if (!open) return;
     setSelectedConv(null);
@@ -56,7 +54,6 @@ export default function MessagesDrawer({ open, onClose, currentUserEmail }) {
     return () => (cancelled = true);
   }, [open]);
 
-  // Load messages when selecting a conversation
   useEffect(() => {
     if (!selectedConv) return;
 
@@ -232,7 +229,7 @@ export default function MessagesDrawer({ open, onClose, currentUserEmail }) {
                     gap: 4,
                   }}
                 >
-                  {/* FIRST LINE: other person's email (or name later) */}
+                  {/* FIRST LINE: other person's email */}
                   <div
                     style={{
                       fontWeight: 600,

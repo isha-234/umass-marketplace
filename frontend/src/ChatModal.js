@@ -1,11 +1,9 @@
-// src/ChatModal.jsx
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
 
 const BACKEND_URL = "http://127.0.0.1:8000";
 
-// Axios with Firebase auth header
 async function getAuthAxios() {
   const auth = getAuth();
   const user = auth.currentUser;
@@ -36,7 +34,6 @@ export default function ChatModal({ open, onClose, conversationId, listing }) {
 
   const messagesEndRef = useRef(null);
 
-  // Fetch current user from backend (/auth/me uses get_current_user)
   useEffect(() => {
     if (!open) return;
 
@@ -65,7 +62,6 @@ export default function ChatModal({ open, onClose, conversationId, listing }) {
     };
   }, [open]);
 
-  // Fetch messages for this conversation
   useEffect(() => {
     if (!open || !conversationId || !currentUserEmail) return;
 
@@ -99,7 +95,7 @@ export default function ChatModal({ open, onClose, conversationId, listing }) {
     };
   }, [open, conversationId, currentUserEmail]);
 
-  // Auto-scroll to bottom on new messages
+
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });

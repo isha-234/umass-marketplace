@@ -13,14 +13,14 @@ import AuthLogin from "./AuthLogin";
 import HomePage from "./HomePage";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "./AuthContext";
-import MessagesDrawer from "./MessagesDrawer";   // 👈 NEW
-import "./App.css";      // rest of app styles
+import MessagesDrawer from "./MessagesDrawer";
+import "./App.css";
 
 function Navbar() {
   const { user, logout, isVerified } = useAuth();
   const navigate = useNavigate();
 
-  // 👇 NEW: My Messages drawer state
+  // My Messages drawer state
   const [messagesOpen, setMessagesOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -51,7 +51,7 @@ function Navbar() {
 
             {user && isVerified ? (
               <>
-                {/* 👇 NEW: My Messages button */}
+                {/* My Messages button */}
                 <button
                   type="button"
                   className="topbar-btn topbar-btn-outline"
@@ -78,7 +78,7 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* 👇 Drawer is mounted here so it overlays the whole app */}
+      {/* Drawer mounted next to navbar so it overlays the app */}
       {user && isVerified && (
         <MessagesDrawer
           open={messagesOpen}
