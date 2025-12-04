@@ -30,7 +30,8 @@ function Navbar() {
       <nav className="topbar">
         <div className="topbar-inner">
           <Link className="topbar-brand" to="/home">
-            UMass Marketplace
+            <img src="/logo2.png" alt="UM Marketplace logo" className="topbar-logo" />
+            <span className="topbar-title">UMass Marketplace</span>
           </Link>
 
           <div className="topbar-actions">
