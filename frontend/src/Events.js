@@ -78,7 +78,7 @@ export default function Events() {
     <div className="events-page">
       {/* Header */}
       <header className="events-header">
-        <h1 className="events-title">Upcoming Events</h1>
+        <h1 className="events-title">Exclusive New Tag Sale Events</h1>
         <p className="events-subtitle">
           Discover amazing events happening around campus
         </p>
@@ -153,13 +153,18 @@ export default function Events() {
             <p>📅 {selectedEvent.date}</p>
             <p>📍 {selectedEvent.location}</p>
             <p>{selectedEvent.description}</p>
-            <div className="modal-actions">
-              <button className="btn-register">Register Now</button>
-              <button className="btn-share">Share Event</button>
-            </div>
           </div>
         </div>
       )}
+
+      {/* Feature Your Event Section */}
+      <section className="feature-event-section">
+        <h2 className="section-title">Feature Your Event</h2>
+        <p>
+          Want your event to be listed here? Contact us at{" "}
+          <a href="mailto:events@umass.edu">events@umass.edu</a> or call us at (413) 545-XXXX.
+        </p>
+      </section>
     </div>
   );
 }

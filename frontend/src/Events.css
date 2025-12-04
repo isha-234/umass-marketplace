@@ -1,7 +1,7 @@
 .events-page {
   margin: 0 auto;
-  padding: 48px 6vw 64px; /* Match Listings.css padding */
-  font-family: "Poppins", sans-serif; /* Keep font consistent */
+  padding: 48px 6vw 64px;
+  font-family: "Poppins", sans-serif;
   color: var(--umass-text);
 }
 
@@ -33,7 +33,8 @@
 
 .featured-image {
   width: 100%;
-  max-height: 300px;
+  height: auto;
+  max-height: 400px;
   object-fit: cover;
 }
 
@@ -101,8 +102,8 @@
   box-shadow: var(--shadow);
 }
 .event-image {
-  height: 150px;
   width: 100%;
+  height: 200px;
   object-fit: cover;
 }
 .event-info {
@@ -167,31 +168,41 @@
   justify-content: center;
   padding: 0;
 }
-.modal-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-.btn-register,
-.btn-share {
-  flex: 1;
-  padding: 0.5rem;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: var(--transition);
-}
-.btn-register {
-  background: var(--umass-red);
-  color: #fff;
-}
-.btn-share {
+
+/* Feature Your Event Section */
+.feature-event-section {
   background: #fff;
-  color: var(--umass-red);
-  border: 2px solid var(--umass-red);
+  text-align: center;
+  padding: 3rem 2rem;
+  border-radius: 12px;
+  margin-top: 4rem;
+  box-shadow: var(--shadow);
 }
-.btn-share:hover { background: var(--umass-red-light); }
+
+.feature-event-section .section-title {
+  font-size: 2rem;
+  color: var(--umass-red);
+  margin-bottom: 1rem;
+}
+
+.feature-event-section p {
+  font-size: 1rem;
+  color: var(--umass-text);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.feature-event-section a {
+  color: var(--umass-red);
+  text-decoration: underline;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.feature-event-section a:hover {
+  color: var(--umass-red-dark);
+}
 
 /* Responsive */
 @media (max-width: 992px) {
@@ -202,5 +213,11 @@
 @media (max-width: 768px) {
   .events-grid {
     grid-template-columns: 1fr;
+  }
+  .featured-event {
+    margin-bottom: 2rem;
+  }
+  .feature-event-section {
+    padding: 2rem 1rem;
   }
 }
