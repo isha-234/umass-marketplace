@@ -1,12 +1,14 @@
-from fastapi import APIRouter, UploadFile, File, Form, Depends
+from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from pathlib import Path
 from datetime import datetime
+from typing import Optional
 import time
 import shutil
 from database import get_items_collection
 from auth import get_current_user
+from bson import ObjectId
 
 
 load_dotenv()
@@ -30,11 +32,14 @@ async def submit_item(
     deliveryOption: str = Form(...),
     contactEmail: str = Form(...),
     contactPhone: str = Form(...),
-    images: list[UploadFile] = File(...),
+    images: Optional[list[UploadFile]] = File(None),
+    existingImages: list[str] = Form([]),
+    listingId: str = Form(None),
     user=Depends(get_current_user),
     status: str = Form(...)
 ):
-    image_paths: list[str] = []
+    images = images or []
+    image_paths: list[str] = [img for img in existingImages if img]
     contactEmail = contactEmail or user.get("email", "")
 
     # Save images to disk
@@ -45,8 +50,7 @@ async def submit_item(
             shutil.copyfileobj(img.file, buffer)
         image_paths.append(f"/uploaded_images/{filename}")  # relative path for serving
 
-    # Create MongoDB document
-    document = {
+    base_doc = {
         "title": title,
         "price": price,
         "category": category,
@@ -56,12 +60,34 @@ async def submit_item(
         "deliveryOption": deliveryOption,
         "contactEmail": contactEmail,
         "contactPhone": contactPhone,
-        "images": image_paths,  # store file paths, not base64
+        "images": image_paths,
         "status": status,
-        "createdAt": datetime.utcnow(),
         "ownerUid": user.get("uid"),
     }
 
-    # Motor returns a coroutine; await it to get the InsertOneResult
+    if listingId:
+        try:
+            oid = ObjectId(listingId)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid listingId")
+
+        update_doc = {
+            **base_doc,
+            "updatedAt": datetime.utcnow(),
+        }
+        result = await items_collection.update_one(
+            {"_id": oid, "ownerUid": user.get("uid")},
+            {"$set": update_doc},
+        )
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Draft not found")
+        return {"status": "updated", "id": listingId, "images": image_paths}
+
+    # Create MongoDB document
+    document = {
+        **base_doc,
+        "createdAt": datetime.utcnow(),
+    }
+
     result = await items_collection.insert_one(document)
     return {"status": "success", "id": str(result.inserted_id), "title": title, "images": image_paths}

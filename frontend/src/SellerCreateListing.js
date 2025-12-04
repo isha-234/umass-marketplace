@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
+const BACKEND_URL = "http://127.0.0.1:8000";
 import "./SellerCreateListing.css";
 
 const CATEGORIES = [
@@ -20,7 +21,9 @@ const CONDITIONS = ["New", "Like New", "Good", "Fair"];
 
 export default function SellerCreateListing() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, idToken } = useAuth();
+  const draft = location.state?.draft;
 
   const [formData, setFormData] = useState({
     title: "",
@@ -32,11 +35,33 @@ export default function SellerCreateListing() {
     deliveryOption: "Pickup",
     contactEmail: "",
     images: [],
+    existingImages: [],
   });
 
   const [formErrors, setFormErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [serverMessage, setServerMessage] = useState("");
+  const [draftId, setDraftId] = useState(null);
+
+  useEffect(() => {
+    if (draft) {
+      setDraftId(draft._id || null);
+      setFormData((prev) => ({
+        ...prev,
+        title: draft.title || "",
+        price: draft.price ?? "",
+        category: draft.category || "",
+        condition: draft.condition || "Good",
+        description: draft.description || "",
+        location: draft.location || "",
+        deliveryOption: draft.deliveryOption || "Pickup",
+        contactEmail: draft.contactEmail || prev.contactEmail,
+        contactPhone: draft.contactPhone || "",
+        images: [], // keep empty; user can re-upload if needed
+        existingImages: draft.images || [],
+      }));
+    }
+  }, [draft]);
 
   useEffect(() => {
     if (user?.email) {
@@ -136,6 +161,10 @@ export default function SellerCreateListing() {
       fd.append("contactEmail", formData.contactEmail.trim());
       fd.append("status", status);
 
+      if (draftId) {
+        fd.append("listingId", draftId);
+      }
+      formData.existingImages.forEach((url) => fd.append("existingImages", url));
       formData.images.forEach((file, idx) =>
         fd.append("images", file, file.name || `image_${idx}.jpg`)
       );
@@ -189,7 +218,9 @@ export default function SellerCreateListing() {
 
   const mainImageURL = formData.images?.[0]
     ? URL.createObjectURL(formData.images[0])
-    : require("./Imagetosell.png");
+    : formData.existingImages?.[0]
+      ? `${BACKEND_URL}${formData.existingImages[0]}`
+      : require("./Imagetosell.png");
 
   return (
     <div className="seller-page">
