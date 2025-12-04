@@ -1,0 +1,75 @@
+/* === Page background & overall layout === */
+.seller-page {
+  min-height: 100vh;
+  background: #f7f4f2;
+  padding: 24px 16px;          /* smaller side padding so content can breathe */
+}
+
+.seller-layout {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 3fr 1.5fr;   /* pulls columns together */
+  column-gap: 20px;                   /* reduces spacing */
+  align-items: flex-start;
+}
+
+
+/* === Left: form card === */
+.seller-form-panel {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 28px 36px 36px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+
+  width: 100%;
+  max-width: 780px;         /* 👈 MAIN FIX: controls how wide the form can be */
+}
+
+
+/* header (Create a Listing + Seller badge) */
+.seller-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* form body */
+.seller-form {
+  display: grid;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+/* make inputs/selects/textarea stretch fully */
+.seller-form .form-control,
+.seller-form .form-select,
+.seller-form textarea {
+  width: 100% !important;
+}
+
+/* === Right: preview column === */
+.seller-preview-panel {
+  position: sticky;
+  top: 24px;
+}
+
+/* preview card styling */
+.listing-preview-card {
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+}
+
+/* === Responsive: stack columns on small screens === */
+@media (max-width: 900px) {
+  .seller-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .seller-preview-panel {
+    position: static;
+    margin-top: 16px;
+  }
+}
