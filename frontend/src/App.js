@@ -4,7 +4,7 @@ import SellerCreateListing from "./SellerCreateListing";
 import Listings from "./Listings";
 import AuthLogin from "./AuthLogin";
 import HomePage from "./HomePage";
-// import Events from "./Events";
+import Events from "./Events";
 import ProfileMenu from "./ProfileMenu";
 import MyListings from "./MyListings";
 import MessagesDrawer from "./MessagesDrawer";
@@ -112,6 +112,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <SellerCreateListing />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/events"
+            element={
+              <ProtectedRoute>
+                <Events />
               </ProtectedRoute>
             }
           />
