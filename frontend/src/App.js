@@ -54,14 +54,14 @@ function Navbar() {
             {user && isVerified ? (
               <>
                 {/* My Messages button */}
-                <button
+                <Link
                     type="button"
                     className="topbar-btn topbar-btn-outline"
                     style={{ textTransform: "none" }}
                     onClick={() => setMessagesOpen(true)}
                   >
                     My Messages
-                </button>
+                </Link>
 
 
                 {/* Profile menu (avatar / dropdown, etc.) */}

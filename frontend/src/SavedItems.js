@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
-import "./Listings.css";
+import "./DraftListings.css";
 import { useAuth } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
+
 
 const BACKEND_URL = "http://127.0.0.1:8000";
 
@@ -10,6 +12,10 @@ export default function SavedItems() {
   const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedImage, setSelectedImage] = useState("");
+  const navigate = useNavigate();
+
   const [error, setError] = useState("");
 
   const getAuthAxios = async () => {
@@ -53,45 +59,120 @@ export default function SavedItems() {
   }, [user]);
 
   return (
-    <div className="listings-page">
-      <section className="listings-hero">
-        <div className="hero-content">
-          <p className="eyebrow">Saved</p>
+    <div className="dl-listings-page">
+      <section className="dl-listings-hero">
+        <div className="dl-hero-content">
+          <p className="dl-eyebrow">Saved</p>
           <h1>Your saved items</h1>
-          <p className="subtitle">Items you bookmarked for later.</p>
+          <p className="dl-subtitle">Items you bookmarked for later.</p>
         </div>
       </section>
 
-      <section className="listings-grid-section">
-        {loading && <div className="muted">Loading saved items…</div>}
-        {error && <div className="error">{error}</div>}
+      <section className="dl-listings-grid-section">
+        {loading && <div className="dl-muted">Loading saved items…</div>}
+        {error && <div className="dl-error">{error}</div>}
         {!loading && !error && items.length === 0 && (
-          <div className="muted">No saved items yet.</div>
+          <div className="dl-muted">No saved items yet.</div>
         )}
-        <div className="listings-grid">
+        <div className="dl-listings-grid">
           {items.map((item) => (
-            <article key={item._id} className="listing-card">
-              <div className="image-wrapper">
+            <article
+              key={item._id}
+              className="dl-listing-card"
+              onClick={() => {
+                setSelectedItem(item);
+                setSelectedImage(
+                  item.images?.[0] ? `${BACKEND_URL}${item.images[0]}` : ""
+                );
+              }}
+            >
+              <div className="dl-image-wrapper">
                 {item.images?.[0] ? (
                   <img src={`${BACKEND_URL}${item.images[0]}`} alt={item.title} />
                 ) : (
-                  <div className="image-placeholder">No photo</div>
+                  <div className="dl-image-placeholder">No photo</div>
                 )}
               </div>
-              <div className="card-body">
-                <div className="card-top">
+
+              <div className="dl-card-body">
+                <div className="dl-card-top">
                   <h3>{item.title}</h3>
-                  <span className="price">${item.price}</span>
+                  <span className="dl-price">${item.price}</span>
                 </div>
-                <p className="meta">
+
+                <p className="dl-meta">
                   {item.category} • {item.condition}
                 </p>
-                <p className="description">{item.description}</p>
+
+                <p className="dl-description">{item.description}</p>
               </div>
             </article>
           ))}
         </div>
+
       </section>
+
+        {/* Modal */}
+    {selectedItem && (
+      <div className="dl-modal-overlay" onClick={() => setSelectedItem(null)}>
+        <div className="dl-modal-card" onClick={(e) => e.stopPropagation()}>
+
+          <button className="dl-close-btn" onClick={() => setSelectedItem(null)}>×</button>
+
+          <div className="dl-modal-content">
+
+            <div className="dl-modal-image">
+              {selectedImage ? (
+                <img src={selectedImage} alt={selectedItem.title} />
+              ) : (
+                <div className="dl-image-placeholder">No photo</div>
+              )}
+
+              {selectedItem.images?.length > 1 && (
+                <div className="dl-modal-thumbs">
+                  {selectedItem.images.map((img, idx) => {
+                    const url = `${BACKEND_URL}${img}`;
+                    return (
+                      <img
+                        key={idx}
+                        src={url}
+                        alt={`thumb-${idx}`}
+                        className={url === selectedImage ? "active" : ""}
+                        onClick={() => setSelectedImage(url)}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="dl-modal-details">
+              <div className="dl-modal-header">
+                <h2>{selectedItem.title}</h2>
+                <span className="dl-price">${selectedItem.price}</span>
+              </div>
+
+              <p className="dl-meta">
+                {selectedItem.category} • {selectedItem.condition}
+              </p>
+
+              <p className="dl-description">{selectedItem.description}</p>
+
+              <div className="dl-detail-grid">
+                <div><strong>Location:</strong> {selectedItem.location}</div>
+                <div><strong>Delivery:</strong> {selectedItem.deliveryOption}</div>
+              </div>
+
+              <div className="dl-contact">
+                <span>{selectedItem.contactEmail}</span>
+                <span>{selectedItem.contactPhone}</span>
+              </div>
+              </div>
+
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 }

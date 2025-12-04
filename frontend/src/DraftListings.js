@@ -51,47 +51,47 @@ export default function DraftListings() {
   };
 
   return (
-    <div className="listings-page">
-      <section className="listings-hero">
-        <div className="hero-content">
-          <p className="eyebrow">Your Drafts</p>
+    <div className="dl-listings-page">
+      <section className="dl-listings-hero">
+        <div className="dl-hero-content">
+          <p className="dl-eyebrow">Your Drafts</p>
           <h1>Draft Listings</h1>
-          <p className="subtitle">Items saved but not published yet.</p>
-          <div className="hero-stats">
+          <p className="dl-subtitle">Items saved but not published yet.</p>
+          <div className="dl-hero-stats">
             <span>{items.length} drafts</span>
           </div>
         </div>
       </section>
 
-      <section className="listings-grid-section">
+      <section className="dl-listings-grid-section">
         {loading && <div className="muted">Loading drafts…</div>}
         {!loading && items.length === 0 && (
-          <div className="muted">You have no draft listings.</div>
+          <div className="dl-muted">You have no draft listings.</div>
         )}
 
-        <div className="listings-grid">
+        <div className="dl-listings-grid">
           {items.map((item) => (
             <article
               key={item._id}
-              className="listing-card"
+              className="dl-listing-card"
               onClick={() => openDetails(item)}
             >
-              <div className="image-wrapper clickable">
+              <div className="dl-image-wrapper clickable">
                 {item.images?.[0] ? (
                   <img src={`${BACKEND_URL}${item.images[0]}`} alt={item.title} />
                 ) : (
-                  <div className="image-placeholder">No photo</div>
+                  <div className="dl-image-placeholder">No photo</div>
                 )}
               </div>
 
-              <div className="card-body">
+              <div className="dl-card-body">
                 <span className="badge draft-badge">DRAFT</span>
 
-                <div className="card-top">
+                <div className="dl-card-top">
                   <h3>{item.title || "Untitled draft"}</h3>
                 </div>
 
-                <p className="description">
+                <p className="dl-description">
                   {item.description || "No description yet."}
                 </p>
               </div>
@@ -102,22 +102,22 @@ export default function DraftListings() {
 
       {/* Modal */}
     {selectedItem && (
-      <div className="modal-overlay" onClick={() => setSelectedItem(null)}>
-        <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+      <div className="dl-modal-overlay" onClick={() => setSelectedItem(null)}>
+        <div className="dl-modal-card" onClick={(e) => e.stopPropagation()}>
 
-          <button className="close-btn" onClick={() => setSelectedItem(null)}>×</button>
+          <button className="dl-close-btn" onClick={() => setSelectedItem(null)}>×</button>
 
-          <div className="modal-content">
+          <div className="dl-modal-content">
 
-            <div className="modal-image">
+            <div className="dl-modal-image">
               {selectedImage ? (
                 <img src={selectedImage} alt={selectedItem.title} />
               ) : (
-                <div className="image-placeholder">No photo</div>
+                <div className="dl-image-placeholder">No photo</div>
               )}
 
               {selectedItem.images?.length > 1 && (
-                <div className="modal-thumbs">
+                <div className="dl-modal-thumbs">
                   {selectedItem.images.map((img, idx) => {
                     const url = `${BACKEND_URL}${img}`;
                     return (
@@ -134,31 +134,31 @@ export default function DraftListings() {
               )}
             </div>
 
-            <div className="modal-details">
-              <div className="modal-header">
+            <div className="dl-modal-details">
+              <div className="dl-modal-header">
                 <h2>{selectedItem.title}</h2>
-                <span className="price">${selectedItem.price}</span>
+                <span className="dl-price">${selectedItem.price}</span>
               </div>
 
-              <p className="meta">
+              <p className="dl-meta">
                 {selectedItem.category} • {selectedItem.condition}
               </p>
 
-              <p className="description">{selectedItem.description}</p>
+              <p className="dl-description">{selectedItem.description}</p>
 
-              <div className="detail-grid">
+              <div className="dl-detail-grid">
                 <div><strong>Location:</strong> {selectedItem.location}</div>
                 <div><strong>Delivery:</strong> {selectedItem.deliveryOption}</div>
               </div>
 
-              <div className="contact">
+              <div className="dl-contact">
                 <span>{selectedItem.contactEmail}</span>
                 <span>{selectedItem.contactPhone}</span>
               </div>
 
-              <div className="modal-actions" style={{ marginTop: "16px" }}>
+              <div className="dl-modal-actions" style={{ marginTop: "16px" }}>
                 <button
-                  className="btn-primary"
+                  className="dl-btn-primary"
                   onClick={() =>
                     navigate("/sell/new", { state: { draft: selectedItem } })
                   }
