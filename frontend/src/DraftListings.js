@@ -156,9 +156,9 @@ export default function DraftListings() {
                 <span>{selectedItem.contactPhone}</span>
               </div>
 
-              <div className="dl-modal-actions" style={{ marginTop: "16px" }}>
+              <div className="modal-actions" style={{ marginTop: "16px" }}>
                 <button
-                  className="dl-btn-primary"
+                  className="btn-primary-sm"
                   onClick={() =>
                     navigate("/sell/new", { state: { draft: selectedItem } })
                   }
