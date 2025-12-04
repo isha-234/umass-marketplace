@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./Events.css";
 
+// Local images
+import farmersMarket from "./images/farmerMarket.jpeg";
+import popupShop from "./images/popup.jpeg";
+import craftFair from "./images/new2u.jpeg";
+import techExpo from "./images/techExpo.jpeg";
+import vintageMarket from "./images/vintageMarket.jpeg";
+import bookExchange from "./images/bookMedia.jpeg";
+import musicFest from "./images/musicFest.jpeg";
+
 const eventsData = [
   {
     id: 1,
@@ -10,63 +19,68 @@ const eventsData = [
     description:
       "Weekly farmers market featuring local vendors and artisans. Fresh produce, handmade goods, and campus community gathering.",
     category: "Community",
+    image: farmersMarket,
   },
   {
     id: 2,
     title: "Student Business Pop-Up Shop",
     date: "November 12, 2024",
     location: "Campus Center Auditorium",
-    description: "Discover and support student-run businesses and creative projects.",
+    description: "Discover and support student-run businesses.",
     category: "Business",
+    image: popupShop,
   },
   {
     id: 3,
-    title: "Craft Fair & Artisan Showcase",
+    title: "New2U Tag Sale",
     date: "December 3, 2024",
     location: "Student Union Ballroom",
-    description: "A festive market for handmade crafts, jewelry, and unique gifts.",
-    category: "Arts & Crafts",
+    description: "Shop lowcost, used dorm items, clothing, and essentials donated during UMass move out.",
+    category: "Reuse and Resale",
+    image: craftFair,
   },
   {
     id: 4,
-    title: "Tech & Innovation Expo",
+    title: "Tech and Innovation Expo",
     date: "November 20, 2024",
     location: "Integrated Sciences Building",
-    description:
-      "Explore cutting-edge student projects and startup ideas. Network with tech enthusiasts and entrepreneurs.",
+    description: "Explore cutting-edge student projects and startup ideas.",
     category: "Technology",
+    image: techExpo,
   },
   {
     id: 5,
     title: "Vintage Marketplace",
     date: "December 10, 2024",
     location: "Old Chapel Courtyard",
-    description:
-      "Find unique vintage clothing, accessories, and collectibles from local sellers and students.",
+    description: "Find unique vintage clothing and collectibles.",
     category: "Fashion",
+    image: vintageMarket,
   },
   {
     id: 6,
-    title: "Book & Media Exchange",
+    title: "Book and Media Exchange",
     date: "November 30, 2024",
-    location: "W.E.B. Du Bois Library Plaza",
+    location: "Du Bois Library Plaza",
     description:
-      "Buy, sell, or trade textbooks, novels, vinyl records, and media. Save money and find hidden treasures.",
-    category: "Books & Media",
+      "Buy, sell, or trade textbooks, novels, vinyl records, and media.",
+    category: "Books and Media",
+    image: bookExchange,
   },
   {
     id: 7,
     title: "Student Music Fest",
     date: "December 15, 2024",
     location: "Fine Arts Center",
-    description:
-      "Enjoy performances by student bands, solo artists, and musical ensembles across campus.",
+    description: "Enjoy performances by student bands and musical ensembles.",
     category: "Music",
+    image: musicFest,
   },
 ];
 
 export default function Events() {
   const [selectedEvent, setSelectedEvent] = useState(null);
+
   const featuredEvent = eventsData[0];
   const otherEvents = eventsData.slice(1);
 
@@ -78,7 +92,7 @@ export default function Events() {
     <div className="events-page">
       {/* Header */}
       <header className="events-header">
-        <h1 className="events-title">Exclusive New Tag Sale Events</h1>
+        <h1 className="events-title">Exclusive UMass Community Events</h1>
         <p className="events-subtitle">
           Discover amazing events happening around campus
         </p>
@@ -87,7 +101,7 @@ export default function Events() {
       {/* Featured Event */}
       <section className="featured-event">
         <img
-          src={`https://picsum.photos/seed/${featuredEvent.id}/800/400`}
+          src={featuredEvent.image}
           alt={featuredEvent.title}
           className="featured-image"
         />
@@ -117,7 +131,7 @@ export default function Events() {
             onClick={() => setSelectedEvent(event)}
           >
             <img
-              src={`https://picsum.photos/seed/${event.id}/400/200`}
+              src={event.image}
               alt={event.title}
               className="event-image"
             />
@@ -145,11 +159,14 @@ export default function Events() {
             >
               ✕
             </button>
+
             <h2>{selectedEvent.title}</h2>
+
             <img
-              src={`https://picsum.photos/seed/${selectedEvent.id}/800/400`}
+              src={selectedEvent.image}
               alt={selectedEvent.title}
             />
+
             <p>📅 {selectedEvent.date}</p>
             <p>📍 {selectedEvent.location}</p>
             <p>{selectedEvent.description}</p>

@@ -216,7 +216,7 @@ export default function Listings() {
           <p className="eyebrow">Marketplace</p>
           <h1>Fresh finds from your campus</h1>
           <p className="subtitle">
-            Browse everything students are selling right now—tech, books,
+            Browse everything students are selling right now - tech, books,
             furniture, and more.
           </p>
           <div className="hero-stats">

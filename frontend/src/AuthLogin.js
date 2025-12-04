@@ -21,7 +21,7 @@ export default function AuthLogin() {
 
       {/* ⭐ NEW TOP MESSAGE */}
       <h2 className="auth-title">
-        UMass Marketplace — Your one-stop solution to buy & sell on campus
+        UMass Marketplace - Your one-stop solution to buy and sell on-campus
       </h2>
 
       <div className={`container ${isSignUp ? "right-panel-active" : ""}`}>

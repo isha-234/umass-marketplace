@@ -7,7 +7,7 @@ export default function HomePage() {
     <div className="homepage">
       <section className="hero">
         <h2 className="tagline">
-          Your campus hub for buying, selling & sharing
+          Your campus hub for buying, selling and sharing!
         </h2>
 
         <div className="actions">

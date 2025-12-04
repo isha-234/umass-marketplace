@@ -1,16 +1,16 @@
 /* === Page background & overall layout === */
 .seller-page {
   min-height: 100vh;
-  background: #f7f4f2;
-  padding: 24px 16px;          /* smaller side padding so content can breathe */
+  background: #faf6f5;                /* UMass ivory */
+  padding: 24px 16px;
 }
 
 .seller-layout {
   max-width: 1320px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 3fr 1.5fr;   /* pulls columns together */
-  column-gap: 20px;                   /* reduces spacing */
+  grid-template-columns: 3fr 1.5fr;
+  column-gap: 20px;
   align-items: flex-start;
 }
 
@@ -23,7 +23,7 @@
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 
   width: 100%;
-  max-width: 780px;         /* 👈 MAIN FIX: controls how wide the form can be */
+  max-width: 780px;
 }
 
 
@@ -35,18 +35,31 @@
   margin-bottom: 12px;
 }
 
-/* form body */
+
+/* === Form fields === */
+
 .seller-form {
   display: grid;
   gap: 16px;
   margin-top: 8px;
 }
 
-/* make inputs/selects/textarea stretch fully */
+/* Make inputs/selects/textarea stretch fully & colored */
 .seller-form .form-control,
 .seller-form .form-select,
 .seller-form textarea {
   width: 100% !important;
+  border: 1.5px solid #dec4c4 !important;      /* UMass soft red border */
+  border-radius: 12px !important;
+  background: #ffffff;
+  color: #3d0a0a;                              /* UMass dark text */
+}
+
+.seller-form .form-control:focus,
+.seller-form .form-select:focus,
+.seller-form textarea:focus {
+  border-color: #881c1c !important;            /* UMass red focus */
+  box-shadow: 0 0 0 3px rgba(136, 28, 28, 0.20);
 }
 
 /* === Right: preview column === */
@@ -60,7 +73,9 @@
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  border: 1.5px solid #f0dada;                 /* soft UMass border */
 }
+
 
 /* === Responsive: stack columns on small screens === */
 @media (max-width: 900px) {
@@ -72,4 +87,65 @@
     position: static;
     margin-top: 16px;
   }
+}
+
+/* === UMass Buttons === */
+
+/* Publish Listing (Primary Action) */
+.btn-primary {
+  background-color: #881c1c !important;    /* UMass Red */
+  border-color: #881c1c !important;
+  color: #ffffff !important;
+  border-radius: 12px !important;
+  padding: 10px 22px !important;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: #6e1414 !important;    /* darker UMass Red */
+  border-color: #6e1414 !important;
+}
+
+
+
+/* Save Draft (Secondary, soft red) */
+.btn-secondary {
+  background-color: #f8eaea !important;    /* soft UMass rose */
+  color: #881c1c !important;
+  border: 1.6px solid #dec4c4 !important;
+  border-radius: 12px !important;
+  padding: 10px 22px !important;
+  font-weight: 600;
+}
+
+.btn-secondary:hover {
+  background-color: #f3dada !important;    /* slightly deeper pink */
+  border-color: #cfa9a9 !important;
+}
+
+
+
+/* Cancel button (Outline) */
+.btn-outline-secondary {
+  border-color: #881c1c !important;
+  color: #881c1c !important;
+  border-radius: 12px !important;
+  padding: 10px 22px !important;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f8eaea !important;
+}
+
+/* === Price Badge Override (UMass Red) === */
+.badge.text-bg-success {
+  background-color: #881c1c !important;   /* UMass Red */
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  padding: 6px 12px !important;
+}
+
+.badge.text-bg-success:hover {
+  background-color: #6e1414 !important;   /* darker red */
 }
