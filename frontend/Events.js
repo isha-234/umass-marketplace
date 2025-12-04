@@ -10,7 +10,6 @@ const eventsData = [
     description:
       "Weekly farmers market featuring local vendors and artisans. Fresh produce, handmade goods, and campus community gathering.",
     category: "Community",
-    contact: "farmers-market@umass.edu",
   },
   {
     id: 2,
@@ -19,7 +18,6 @@ const eventsData = [
     location: "Campus Center Auditorium",
     description: "Discover and support student-run businesses and creative projects.",
     category: "Business",
-    contact: "student-business@umass.edu",
   },
   {
     id: 3,
@@ -28,7 +26,6 @@ const eventsData = [
     location: "Student Union Ballroom",
     description: "A festive market for handmade crafts, jewelry, and unique gifts.",
     category: "Arts & Crafts",
-    contact: "craft-fair@umass.edu",
   },
   {
     id: 4,
@@ -38,7 +35,6 @@ const eventsData = [
     description:
       "Explore cutting-edge student projects and startup ideas. Network with tech enthusiasts and entrepreneurs.",
     category: "Technology",
-    contact: "tech-expo@umass.edu",
   },
   {
     id: 5,
@@ -48,7 +44,6 @@ const eventsData = [
     description:
       "Find unique vintage clothing, accessories, and collectibles from local sellers and students.",
     category: "Fashion",
-    contact: "vintage-market@umass.edu",
   },
   {
     id: 6,
@@ -58,7 +53,6 @@ const eventsData = [
     description:
       "Buy, sell, or trade textbooks, novels, vinyl records, and media. Save money and find hidden treasures.",
     category: "Books & Media",
-    contact: "book-exchange@umass.edu",
   },
   {
     id: 7,
@@ -68,7 +62,6 @@ const eventsData = [
     description:
       "Enjoy performances by student bands, solo artists, and musical ensembles across campus.",
     category: "Music",
-    contact: "music-fest@umass.edu",
   },
 ];
 
@@ -85,7 +78,7 @@ export default function Events() {
     <div className="events-page">
       {/* Header */}
       <header className="events-header">
-        <h1 className="events-title">New Tag Sale Events</h1>
+        <h1 className="events-title">Upcoming Events</h1>
         <p className="events-subtitle">
           Discover amazing events happening around campus
         </p>
@@ -160,7 +153,6 @@ export default function Events() {
             <p>📅 {selectedEvent.date}</p>
             <p>📍 {selectedEvent.location}</p>
             <p>{selectedEvent.description}</p>
-            <p>Contact: {selectedEvent.contact}</p>
           </div>
         </div>
       )}
