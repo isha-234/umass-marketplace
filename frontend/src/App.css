@@ -67,18 +67,15 @@
   color: var(--umass-red);
   text-decoration: none;
   letter-spacing: 0.02em;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
 }
 
-.topbar-brand::before {
-  content: "";
-  width: 28px;
-  height: 28px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, var(--umass-red-dark), var(--umass-red));
-  margin-right: 0.6rem;
-  box-shadow: 0 0 0 2px rgba(136, 28, 28, 0.16);
+.topbar-logo {
+  height: 32px;
+  width: auto;
+  display: block;
 }
 
 /* Right side */

@@ -243,6 +243,13 @@ a:hover {
   opacity: 0.95;
 }
 
+.overlay-logo {
+  height: 68px;
+  width: auto;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+}
+
 .overlay-left {
   transform: translateX(-25%);
 }

@@ -41,6 +41,11 @@ export default function AuthLogin() {
           <div className="overlay">
 
             <div className="overlay-panel overlay-left">
+              <img
+                src={`${process.env.PUBLIC_URL}/logo-login-gpt.png`}
+                alt="UMass Marketplace logo"
+                className="overlay-logo"
+              />
               <h1>Welcome Back!</h1>
               <p>Please login with your UMass email</p>
               <button className="ghost" onClick={() => setIsSignUp(false)}>
@@ -49,6 +54,11 @@ export default function AuthLogin() {
             </div>
 
             <div className="overlay-panel overlay-right">
+              <img
+                src={`${process.env.PUBLIC_URL}/logo-login-gpt.png`}
+                alt="UMass Marketplace logo"
+                className="overlay-logo"
+              />
               <h1>Welcome to UMass Marketplace!</h1>
               <p>Enter your UMass email to get started!</p>
               <button className="ghost" onClick={() => setIsSignUp(true)}>
