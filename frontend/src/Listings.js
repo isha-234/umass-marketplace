@@ -409,7 +409,7 @@ export default function Listings() {
 
                 <div className="modal-actions">
                   <button
-                    className="btn-primary"
+                    className="btn-primary-sm"
                     onClick={(e) => handleContactSeller(selectedItem, e)}
                   >
                     Contact seller

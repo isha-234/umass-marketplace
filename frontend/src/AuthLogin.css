@@ -35,9 +35,9 @@
   box-shadow: 0 18px 40px rgba(0,0,0,0.12);
   position: relative;
   overflow: hidden;
-  width: 880px;              /* Spacious Apple-like width */
+  width: 900px;              /* Spacious Apple-like width */
   max-width: 96%;
-  min-height: 500px;
+  min-height: 620px;
   transition: all 0.6s ease-in-out;
 
   display: flex;
@@ -83,13 +83,17 @@
 }
 
 /* Inner forms */
-form {
-  background: transparent;
+.auth-page form {
+  background: #f8f7fb;
   display: flex;
   flex-direction: column;
   gap: 12px;
   width: 100%;
   max-width: 280px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+  padding: 18px 20px 16px;
+  border-radius: 16px;
+  box-sizing: border-box;
 }
 
 
@@ -97,7 +101,7 @@ form {
    INPUTS
 ---------------------------------------------------------- */
 
-input {
+.auth-page input {
   background: #f4f4f6;
   border: 1px solid #e3e3e3;
   border-radius: 10px;
@@ -107,7 +111,7 @@ input {
   transition: border 0.2s ease;
 }
 
-input:focus {
+.auth-page input:focus {
   outline: none;
   border-color: #881c1c;
 }
@@ -117,7 +121,7 @@ input:focus {
    BUTTONS
 ---------------------------------------------------------- */
 
-button {
+.auth-page button {
   border-radius: 999px;
   border: none;
   padding: 12px 40px;
@@ -130,17 +134,17 @@ button {
   letter-spacing: 0.5px;
 }
 
-button:hover {
+.auth-page button:hover {
   background: #6e1414;
 }
 
-button.ghost {
+.auth-page button.ghost {
   background: transparent;
   border: 1.6px solid #ffffff;
   color: #fff;
 }
 
-button.ghost:hover {
+.auth-page button.ghost:hover {
   background: rgba(255,255,255,0.15);
 }
 

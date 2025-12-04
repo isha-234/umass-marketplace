@@ -440,6 +440,30 @@
   padding-right: 42px;
 }
 
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.btn-primary-sm {
+  background: var(--umass-red);
+  color: #fff;
+  border: 1px solid var(--umass-red);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.btn-primary-sm:hover {
+  background: var(--umass-red-dark);
+  border-color: var(--umass-red-dark);
+  transform: translateY(-1px);
+}
+
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
