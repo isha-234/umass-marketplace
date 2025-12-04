@@ -19,10 +19,12 @@ def get_items_collection():
     items_collection = db["items"]
     return items_collection
 
+def get_saved_items_collection():
+    return db["saved_items"]
+
 def get_conversations_collection():   
     return db["conversations"]
 
 def get_messages_collection():
     return db["messages"]
-
 
