@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./DraftListings.css";
 import { useAuth } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const BACKEND_URL = "http://127.0.0.1:8000";
 
@@ -10,28 +11,39 @@ export default function DraftListings() {
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedImage, setSelectedImage] = useState("");
+  const navigate = useNavigate();
 
   // Pull logged-in email from AuthContext
   const { user } = useAuth();
   const userEmail = user?.email;
 
   useEffect(() => {
-    if (!userEmail) return;
+    if (!userEmail) {
+      setLoading(false);
+      setItems([]);
+      return;
+    }
 
+    let active = true;
     const load = async () => {
       try {
         const res = await axios.get(`${BACKEND_URL}/listing/user/drafts`, {
           params: { email: userEmail },
         });
+        if (!active) return;
         setItems(res.data);
       } catch (err) {
+        if (!active) return;
         console.error("Error loading draft listings:", err);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
     load();
-  }, []);
+    return () => {
+      active = false;
+    };
+  }, [userEmail]);
 
   const openDetails = (item) => {
     setSelectedItem(item);
@@ -142,6 +154,17 @@ export default function DraftListings() {
               <div className="contact">
                 <span>{selectedItem.contactEmail}</span>
                 <span>{selectedItem.contactPhone}</span>
+              </div>
+
+              <div className="modal-actions" style={{ marginTop: "16px" }}>
+                <button
+                  className="btn-primary"
+                  onClick={() =>
+                    navigate("/sell/new", { state: { draft: selectedItem } })
+                  }
+                >
+                  Edit Listing
+                </button>
               </div>
             </div>
 
