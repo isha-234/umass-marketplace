@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
+import "./SellerCreateListing.css";
 
 const CATEGORIES = [
   "Electronics",
@@ -30,7 +31,6 @@ export default function SellerCreateListing() {
     location: "",
     deliveryOption: "Pickup",
     contactEmail: "",
-    contactPhone: "",
     images: [],
   });
 
@@ -40,7 +40,10 @@ export default function SellerCreateListing() {
 
   useEffect(() => {
     if (user?.email) {
-      setFormData((prev) => ({ ...prev, contactEmail: prev.contactEmail || user.email }));
+      setFormData((prev) => ({
+        ...prev,
+        contactEmail: prev.contactEmail || user.email,
+      }));
     }
   }, [user]);
 
@@ -62,24 +65,25 @@ export default function SellerCreateListing() {
 
   const validate = () => {
     const errors = {};
+
     if (!formData.title?.trim()) errors.title = "Item name is required.";
-    if (formData.price === "" || isNaN(Number(formData.price)))
+
+    if (formData.price === "" || isNaN(Number(formData.price))) {
       errors.price = "Valid price is required.";
-    if (Number(formData.price) < 0)
+    } else if (Number(formData.price) < 0) {
       errors.price = "Price cannot be negative.";
+    }
+
     if (!formData.category) errors.category = "Please choose a category.";
-    if (!formData.contactEmail && !formData.contactPhone) {
-      errors.contact = "Provide at least one contact method (email or phone).";
-    }
-    if (formData.contactPhone && !/^\d{10}$/.test(formData.contactPhone)) {
-      errors.contactPhone = "Phone must be 10 digits (numbers only).";
-    }
-    if (
-      formData.contactEmail &&
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contactEmail)
+
+    if (!formData.contactEmail?.trim()) {
+      errors.contactEmail = "Contact email is required.";
+    } else if (
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contactEmail.trim())
     ) {
       errors.contactEmail = "Enter a valid email.";
     }
+
     return errors;
   };
 
@@ -90,13 +94,12 @@ export default function SellerCreateListing() {
     formData.images.forEach((file) => fd.append("images", file));
 
     try {
-      const url = "http://127.0.0.1:8000/ai-assist"; // your AI Assist endpoint
+      const url = "http://127.0.0.1:8000/ai-assist";
       const res = await axios.post(url, fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       if (res.status === 200) {
-        // expecting { summary: "..." } from backend
         setFormData((prev) => ({ ...prev, description: res.data.summary }));
       } else {
         setServerMessage("Failed to get AI Assist response.");
@@ -109,7 +112,6 @@ export default function SellerCreateListing() {
   const handleSubmit = async (status) => {
     setServerMessage("");
 
-    // Only validate when publishing
     if (status === "published") {
       const errors = validate();
       setFormErrors(errors);
@@ -132,31 +134,28 @@ export default function SellerCreateListing() {
       fd.append("location", formData.location.trim());
       fd.append("deliveryOption", formData.deliveryOption);
       fd.append("contactEmail", formData.contactEmail.trim());
-      fd.append("contactPhone", formData.contactPhone.trim());
       fd.append("status", status);
+
       formData.images.forEach((file, idx) =>
         fd.append("images", file, file.name || `image_${idx}.jpg`)
       );
+
       const url = "http://127.0.0.1:8000/listing/insert";
-      const res = await axios.post(
-        url,
-        fd,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
+      const res = await axios.post(url, fd, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
 
       if (res.status === 200 || res.status === 201) {
         if (status === "draft") {
-            setServerMessage("Draft saved.");
-            navigate("/draft-listings");
-          } else {
-            setServerMessage("Listing published.");
-            navigate("/my-listings");
-          }
+          setServerMessage("Draft saved.");
+          navigate("/draft-listings");
+        } else {
+          setServerMessage("Listing published.");
+          navigate("/my-listings");
+        }
       } else {
         setServerMessage("Unexpected response from server.");
       }
@@ -193,23 +192,31 @@ export default function SellerCreateListing() {
     : require("./Imagetosell.png");
 
   return (
-    <div className="container mt-4" style={{ maxWidth: "980px" }}>
-      <div className="d-flex align-items-center gap-2 mb-3">
-        <h2 className="m-0">Create a Listing</h2>
-        <span className="badge text-bg-secondary">Seller</span>
-      </div>
+    <div className="seller-page">
+      <div className="seller-layout">
+        {/* LEFT: Header + Form */}
+        <section className="seller-form-panel">
+          <div className="seller-header">
+            <div>
+              <h2 className="mb-1">Create a Listing</h2>
+              <small className="text-muted">
+                Fill in the details for your item.
+              </small>
+            </div>
+            <span className="badge text-bg-secondary fs-6 px-3 py-2">
+              Seller
+            </span>
+          </div>
 
-      {serverMessage && (
-        <div className="alert alert-info" role="alert">
-          {serverMessage}
-        </div>
-      )}
+          {serverMessage && (
+            <div className="alert alert-info mt-3" role="alert">
+              {serverMessage}
+            </div>
+          )}
 
-      <div className="row g-4">
-        {/* Form column */}
-        <div className="col-12 col-lg-7">
-          <form>
-            <div className="mb-3">
+          <form className="seller-form">
+            {/* Item name */}
+            <div>
               <label htmlFor="title" className="form-label">
                 Item Name
               </label>
@@ -228,7 +235,8 @@ export default function SellerCreateListing() {
               )}
             </div>
 
-            <div className="row g-3 mb-3">
+            {/* Price + Category */}
+            <div className="row g-3">
               <div className="col-12 col-sm-6">
                 <label htmlFor="price" className="form-label">
                   Price (USD)
@@ -249,6 +257,7 @@ export default function SellerCreateListing() {
                   <div className="invalid-feedback">{formErrors.price}</div>
                 )}
               </div>
+
               <div className="col-12 col-sm-6">
                 <label htmlFor="category" className="form-label">
                   Category
@@ -274,7 +283,8 @@ export default function SellerCreateListing() {
               </div>
             </div>
 
-            <div className="row g-3 mb-3">
+            {/* Condition + Delivery */}
+            <div className="row g-3">
               <div className="col-12 col-sm-6">
                 <label htmlFor="condition" className="form-label">
                   Condition
@@ -292,6 +302,7 @@ export default function SellerCreateListing() {
                   ))}
                 </select>
               </div>
+
               <div className="col-12 col-sm-6">
                 <label htmlFor="deliveryOption" className="form-label">
                   Delivery Option
@@ -309,11 +320,21 @@ export default function SellerCreateListing() {
               </div>
             </div>
 
-            {/* ✅ Single Description field with AI Assist */}
-            <div className="mb-3">
-              <label htmlFor="description" className="form-label">
-                Description
-              </label>
+            {/* Description + AI Assist */}
+            <div>
+              <div className="d-flex justify-content-between align-items-center mb-1">
+                <label htmlFor="description" className="form-label mb-0">
+                  Description
+                </label>
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm"
+                  onClick={handleAIAssist}
+                >
+                  Use AI Assist
+                </button>
+              </div>
+
               <textarea
                 id="description"
                 rows={4}
@@ -322,16 +343,10 @@ export default function SellerCreateListing() {
                 onChange={handleChange}
                 placeholder="Key details, dimensions, accessories, defects, etc."
               />
-              <button
-                type="button"
-                className="btn btn-secondary mt-2"
-                onClick={handleAIAssist}
-              >
-                Use AI Assist
-              </button>
             </div>
 
-            <div className="mb-3">
+            {/* Location */}
+            <div>
               <label htmlFor="location" className="form-label">
                 Location (meetup)
               </label>
@@ -345,8 +360,9 @@ export default function SellerCreateListing() {
               />
             </div>
 
-            <div className="row g-3 mb-3">
-              <div className="col-12 col-sm-6">
+            {/* Contact */}
+            <div className="row g-3">
+              <div className="col-12">
                 <label htmlFor="contactEmail" className="form-label">
                   Contact Email
                 </label>
@@ -366,35 +382,10 @@ export default function SellerCreateListing() {
                   </div>
                 )}
               </div>
-              <div className="col-12 col-sm-6">
-                <label htmlFor="contactPhone" className="form-label">
-                  Contact Phone
-                </label>
-                <input
-                  type="tel"
-                  id="contactPhone"
-                  className={`form-control ${
-                    formErrors.contactPhone ? "is-invalid" : ""
-                  }`}
-                  value={formData.contactPhone}
-                  onChange={handleChange}
-                  placeholder="10 digits"
-                />
-                {formErrors.contactPhone && (
-                  <div className="invalid-feedback">
-                    {formErrors.contactPhone}
-                  </div>
-                )}
-              </div>
             </div>
 
-            {formErrors.contact && (
-              <div className="alert alert-warning py-2" role="alert">
-                {formErrors.contact}
-              </div>
-            )}
-
-            <div className="mb-3">
+            {/* Photos */}
+            <div>
               <label htmlFor="images" className="form-label">
                 Photos
               </label>
@@ -411,8 +402,8 @@ export default function SellerCreateListing() {
               </div>
             </div>
 
-            <div className="d-flex gap-2">
-              {/* Publish */}
+            {/* Actions */}
+            <div className="d-flex flex-wrap gap-2 pt-2">
               <button
                 type="button"
                 className="btn btn-primary"
@@ -422,7 +413,6 @@ export default function SellerCreateListing() {
                 {submitting ? "Publishing…" : "Publish Listing"}
               </button>
 
-              {/* Save Draft */}
               <button
                 type="button"
                 className="btn btn-secondary"
@@ -432,7 +422,6 @@ export default function SellerCreateListing() {
                 Save Draft
               </button>
 
-              {/* Cancel */}
               <button
                 type="button"
                 className="btn btn-outline-secondary"
@@ -443,11 +432,11 @@ export default function SellerCreateListing() {
               </button>
             </div>
           </form>
-        </div>
+        </section>
 
-        {/* Preview column */}
-        <div className="col-12 col-lg-5">
-          <div className="card shadow-sm">
+        {/* RIGHT: Preview */}
+        <aside className="seller-preview-panel">
+          <div className="card shadow-sm listing-preview-card">
             <img
               src={mainImageURL}
               className="card-img-top"
@@ -464,12 +453,15 @@ export default function SellerCreateListing() {
                     : "$0.00"}
                 </span>
               </div>
+
               <p className="text-muted mb-2">
                 {formData.category || "Category"} • {formData.condition}
               </p>
+
               <p className="card-text" style={{ whiteSpace: "pre-wrap" }}>
                 {formData.description || "Your description will appear here."}
               </p>
+
               <p className="text-muted small mb-0">
                 {formData.location
                   ? `Meet at: ${formData.location}`
@@ -478,7 +470,6 @@ export default function SellerCreateListing() {
             </div>
           </div>
 
-          {/* Thumbnails */}
           {formData.images?.length > 1 && (
             <div className="mt-3 d-flex flex-wrap gap-2">
               {formData.images.slice(0, 10).map((f, i) => (
@@ -496,7 +487,7 @@ export default function SellerCreateListing() {
               ))}
             </div>
           )}
-        </div>
+        </aside>
       </div>
     </div>
   );
