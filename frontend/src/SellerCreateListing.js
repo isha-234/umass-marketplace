@@ -3,8 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
-const BACKEND_URL = "http://127.0.0.1:8000";
 import "./SellerCreateListing.css";
+const BACKEND_URL = "http://127.0.0.1:8000";
+
 
 const CATEGORIES = [
   "Electronics",
