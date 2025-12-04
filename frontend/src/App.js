@@ -9,6 +9,7 @@ import ProfileMenu from "./ProfileMenu";
 import MyListings from "./MyListings";
 import MessagesDrawer from "./MessagesDrawer";
 import DraftListings from "./DraftListings";
+import SavedItems from "./SavedItems";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "./AuthContext";
 import "./App.css";
@@ -128,6 +129,14 @@ function App() {
           <Route path="/sell/new" element={<SellerCreateListing />} />
           <Route path="/my-listings" element={<MyListings />} />
           <Route path="/draft-listings" element={<DraftListings />} />
+          <Route
+            path="/saved"
+            element={
+              <ProtectedRoute>
+                <SavedItems />
+              </ProtectedRoute>
+            }
+          />
    </Routes>
       </main>
     </>

@@ -4,10 +4,12 @@ import axios from "axios";
 import "./Listings.css";
 import ChatModal from "./ChatModal";
 import { getAuth } from "firebase/auth";
+import { useAuth } from "./AuthContext";
 
 const BACKEND_URL = "http://127.0.0.1:8000";
 
 export default function Listings() {
+  const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [conditionOptions, setConditionOptions] = useState([]);
@@ -19,6 +21,7 @@ export default function Listings() {
   const [error, setError] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedImage, setSelectedImage] = useState("");
+  const [saveStatus, setSaveStatus] = useState({});
 
   // Chat-related state
   const [conversationId, setConversationId] = useState(null);
@@ -104,6 +107,34 @@ export default function Listings() {
     };
   }, [search, category, condition, sort]);
 
+  // Fetch saved items for the logged-in user
+  useEffect(() => {
+    let active = true;
+    const fetchSaved = async () => {
+      if (!user) {
+        setSaveStatus({});
+        return;
+      }
+      try {
+        const ax = await getAuthAxios();
+        const res = await ax.get("/saved-items");
+        if (!active) return;
+        const ids = res.data?.itemIds || [];
+        const statusMap = {};
+        ids.forEach((id) => {
+          statusMap[id] = "saved";
+        });
+        setSaveStatus((prev) => ({ ...prev, ...statusMap }));
+      } catch (err) {
+        // not logged in or fetch failed; keep silent
+      }
+    };
+    fetchSaved();
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
   // Close modal on Escape
   useEffect(() => {
     const onKeyDown = (e) => {
@@ -118,6 +149,36 @@ export default function Listings() {
     setSelectedImage(
       item.images?.[0] ? `${BACKEND_URL}${item.images[0]}` : ""
     );
+  };
+
+  const handleSaveListing = async (item, e) => {
+    if (e) e.stopPropagation();
+    const listingId = item._id;
+    const alreadySaved = saveStatus[listingId] === "saved";
+    try {
+      setSaveStatus((s) => ({ ...s, [listingId]: "saving" }));
+      const ax = await getAuthAxios();
+      if (alreadySaved) {
+        await ax.delete("/saved-items", { data: { listingId } });
+        setSaveStatus((s) => ({ ...s, [listingId]: "unsaved" }));
+      } else {
+        await ax.post("/saved-items", { listingId });
+        setSaveStatus((s) => ({ ...s, [listingId]: "saved" }));
+      }
+    } catch (err) {
+      console.error("Error saving item:", err);
+      const detail = err.response?.data?.detail;
+      const msg =
+        typeof detail === "string"
+          ? detail
+          : Array.isArray(detail)
+            ? detail.map((d) => d.msg || d.detail).filter(Boolean).join("\n")
+            : alreadySaved
+              ? "Could not unsave. Please try again."
+              : "Could not save. Please log in and try again.";
+      alert(msg);
+      setSaveStatus((s) => ({ ...s, [listingId]: "error" }));
+    }
   };
 
   // Start or reuse a conversation for this listing
@@ -225,6 +286,13 @@ export default function Listings() {
               className="listing-card"
               onClick={() => openDetails(item)}
             >
+              <button
+                className={`save-btn ${saveStatus[item._id] === "saved" ? "saved" : ""}`}
+                onClick={(e) => handleSaveListing(item, e)}
+                title={saveStatus[item._id] === "saved" ? "Saved (click to unsave)" : "Save for later"}
+              >
+                {saveStatus[item._id] === "saved" ? "♥" : "♡"}
+              </button>
               <div className="image-wrapper clickable">
                 {item.images?.[0] ? (
                   <img

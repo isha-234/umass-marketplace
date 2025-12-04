@@ -186,6 +186,7 @@
     transform 150ms ease,
     box-shadow 150ms ease,
     border-color 150ms ease;
+  position: relative;
 }
 
 .listing-card:hover {
@@ -193,6 +194,34 @@
   box-shadow: var(--shadow-soft);
   border-color: var(--border-strong);
   cursor: pointer;
+}
+
+.save-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #c53030;
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #c53030;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.save-btn:hover {
+  background: #ffeaea;
+  border-color: #a61b1b;
+  color: #a61b1b;
+}
+
+.save-btn.saved {
+  background: #c53030;
+  border-color: #a61b1b;
+  color: #fff;
 }
 
 /* Images */
