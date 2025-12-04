@@ -28,13 +28,17 @@ async def submit_item(
     description: str = Form(...),
     location: str = Form(...),
     deliveryOption: str = Form(...),
-    contactEmail: str = Form(...),
-    contactPhone: str = Form(...),
+    # make email optional in the form but we’ll fall back to user email
+    contactEmail: str = Form(""),
+    # PHONE NOW OPTIONAL / REMOVABLE
+    contactPhone: str | None = Form(None),
     images: list[UploadFile] = File(...),
     user=Depends(get_current_user),
     status: str = Form(...)
 ):
     image_paths: list[str] = []
+
+    # If no email sent, default to authenticated user’s email
     contactEmail = contactEmail or user.get("email", "")
 
     # Save images to disk
@@ -43,7 +47,8 @@ async def submit_item(
         file_path = UPLOAD_DIR / filename
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(img.file, buffer)
-        image_paths.append(f"/uploaded_images/{filename}")  # relative path for serving
+        # relative path for serving
+        image_paths.append(f"/uploaded_images/{filename}")
 
     # Create MongoDB document
     document = {
@@ -55,8 +60,7 @@ async def submit_item(
         "location": location,
         "deliveryOption": deliveryOption,
         "contactEmail": contactEmail,
-        "contactPhone": contactPhone,
-        "images": image_paths,  # store file paths, not base64
+        "images": image_paths,   # store file paths, not base64
         "status": status,
         "createdAt": datetime.utcnow(),
         "ownerUid": user.get("uid"),
@@ -64,4 +68,9 @@ async def submit_item(
 
     # Motor returns a coroutine; await it to get the InsertOneResult
     result = await items_collection.insert_one(document)
-    return {"status": "success", "id": str(result.inserted_id), "title": title, "images": image_paths}
+    return {
+        "status": "success",
+        "id": str(result.inserted_id),
+        "title": title,
+        "images": image_paths,
+    }
