@@ -16,6 +16,7 @@ from ViewListings import router as view_listings_router
 from ai_assist import router as ai_assist_router
 from chat import router as chat_router
 from savedItems import router as saved_items_router
+from events import router as events_router
 import os
 app = FastAPI()
 
@@ -38,6 +39,8 @@ app.include_router(view_listings_router)
 app.include_router(ai_assist_router)
 app.include_router(saved_items_router)
 app.include_router(chat_router)
+app.include_router(events_router)
+
 app.mount("/uploaded_images", StaticFiles(directory=str(UPLOAD_DIR)), name="uploaded_images")
 
 @app.get("/")
