@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Events.css";
 
-// Local images
+// Optional: Local images as placeholders if backend image is empty
 import farmersMarket from "./images/farmerMarket.jpeg";
 import popupShop from "./images/popup.jpeg";
 import craftFair from "./images/new2u.jpeg";
@@ -10,83 +10,52 @@ import vintageMarket from "./images/vintageMarket.jpeg";
 import bookExchange from "./images/bookMedia.jpeg";
 import musicFest from "./images/musicFest.jpeg";
 
-const eventsData = [
-  {
-    id: 1,
-    title: "UMass Amherst Farmers Market",
-    date: "October 26, 2024",
-    location: "Goodell Lawn",
-    description:
-      "Weekly farmers market featuring local vendors and artisans. Fresh produce, handmade goods, and campus community gathering.",
-    category: "Community",
-    image: farmersMarket,
-  },
-  {
-    id: 2,
-    title: "Student Business Pop-Up Shop",
-    date: "November 12, 2024",
-    location: "Campus Center Auditorium",
-    description: "Discover and support student-run businesses.",
-    category: "Business",
-    image: popupShop,
-  },
-  {
-    id: 3,
-    title: "New2U Tag Sale",
-    date: "December 3, 2024",
-    location: "Student Union Ballroom",
-    description: "Shop lowcost, used dorm items, clothing, and essentials donated during UMass move out.",
-    category: "Reuse and Resale",
-    image: craftFair,
-  },
-  {
-    id: 4,
-    title: "Tech and Innovation Expo",
-    date: "November 20, 2024",
-    location: "Integrated Sciences Building",
-    description: "Explore cutting-edge student projects and startup ideas.",
-    category: "Technology",
-    image: techExpo,
-  },
-  {
-    id: 5,
-    title: "Vintage Marketplace",
-    date: "December 10, 2024",
-    location: "Old Chapel Courtyard",
-    description: "Find unique vintage clothing and collectibles.",
-    category: "Fashion",
-    image: vintageMarket,
-  },
-  {
-    id: 6,
-    title: "Book and Media Exchange",
-    date: "November 30, 2024",
-    location: "Du Bois Library Plaza",
-    description:
-      "Buy, sell, or trade textbooks, novels, vinyl records, and media.",
-    category: "Books and Media",
-    image: bookExchange,
-  },
-  {
-    id: 7,
-    title: "Student Music Fest",
-    date: "December 15, 2024",
-    location: "Fine Arts Center",
-    description: "Enjoy performances by student bands and musical ensembles.",
-    category: "Music",
-    image: musicFest,
-  },
+const placeholderImages = [
+  farmersMarket,
+  popupShop,
+  craftFair,
+  techExpo,
+  vintageMarket,
+  bookExchange,
+  musicFest,
 ];
 
 export default function Events() {
+  const [eventsData, setEventsData] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const featuredEvent = eventsData[0];
-  const otherEvents = eventsData.slice(1);
+  // Fetch events from backend
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/events/");
+        const data = await response.json();
+
+        // Assign placeholder images if backend doesn't have images
+        const eventsWithImages = data.map((event, index) => ({
+          ...event,
+          image: event.image || placeholderImages[index % placeholderImages.length],
+        }));
+
+        setEventsData(eventsWithImages);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = selectedEvent ? "hidden" : "auto";
   }, [selectedEvent]);
+
+  if (eventsData.length === 0) {
+    return <p>Loading events...</p>;
+  }
+
+  const featuredEvent = eventsData[0];
+  const otherEvents = eventsData.slice(1);
 
   return (
     <div className="events-page">
@@ -161,12 +130,10 @@ export default function Events() {
             </button>
 
             <h2>{selectedEvent.title}</h2>
-
             <img
               src={selectedEvent.image}
               alt={selectedEvent.title}
             />
-
             <p>📅 {selectedEvent.date}</p>
             <p>📍 {selectedEvent.location}</p>
             <p>{selectedEvent.description}</p>
