@@ -28,3 +28,5 @@ def get_conversations_collection():
 def get_messages_collection():
     return db["messages"]
 
+def get_events_collection():      
+    return db["events"]

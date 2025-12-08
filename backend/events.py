@@ -1,21 +1,14 @@
 from fastapi import APIRouter, HTTPException
 from bson import ObjectId
 from events_models import Event, EventCreate
-from motor.motor_asyncio import AsyncIOMotorClient
-import os
+from database import get_events_collection
 
 router = APIRouter(
     prefix="/api/events",
     tags=["events"]
 )
 
-# Connect to MongoDB
-MONGODB_URI = os.getenv("MONGODB_URI")
-MONGODB_DB = os.getenv("MONGODB_DB")
-
-client = AsyncIOMotorClient(MONGODB_URI)
-db = client[MONGODB_DB]
-events_collection = db["events"]
+events_collection = get_events_collection()
 
 def fix_id(doc):
     doc["id"] = str(doc["_id"])
