@@ -34,6 +34,7 @@ async def ai_assist(
     num_photos = len(images)
 
 
+    # Build a compact context block for the model; omit empty fields.
     details = [
         f"Item title: {title}" if title else "",
         f"Item category: {category}" if category else "",
@@ -73,6 +74,7 @@ Write ONLY the continuation starting with "is ...", nothing else.
 """
 
     try:
+        # Use a constrained prompt to keep the model on-topic and under word limits.
         model = genai.GenerativeModel(MODEL)
         response = model.generate_content(
             prompt,

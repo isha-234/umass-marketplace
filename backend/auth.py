@@ -13,6 +13,7 @@ initialize_firebase_app()
 async def get_current_user(
     token: HTTPAuthorizationCredentials = Depends(security),
 ):
+    # Require Authorization header; downstream routes rely on Firebase user identity.
     if token is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -33,6 +34,7 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token payload",
         )
+    # Enforce campus-only access: require Firebase email verification.
     if not decoded.get("email_verified", False):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -23,6 +23,7 @@ export default function SignupForm() {
     e.preventDefault();
     setMessage("");
 
+    // Enforce campus-only accounts up front.
     if (!form.email.toLowerCase().endsWith("@umass.edu")) {
       setMessage("Please use your UMass email address.");
       return;
@@ -34,15 +35,17 @@ export default function SignupForm() {
 
     try {
       setLoading(true);
+      // Create user first; Firebase will return structured errors for common cases.
       const cred = await createUserWithEmailAndPassword(auth, form.email, form.password);
 
+      // Require email verification before first login; send link then sign out.
       await sendEmailVerification(cred.user, {
         url: process.env.REACT_APP_EMAIL_VERIFICATION_REDIRECT ||
              "http://localhost:3000/auth",
         handleCodeInApp: false,
       });
 
-      await signOut(auth);
+      await signOut(auth); // clear session until verification is complete
       setMessage("Verification Link Sent! Check your email to verify.");
       setTimeout(() => navigate("/auth"), 1200);
 

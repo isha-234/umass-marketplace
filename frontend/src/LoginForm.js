@@ -16,30 +16,33 @@ export default function LoginForm() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage("");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setMessage("");
 
-    try {
-      setLoading(true);
-      const cred = await signInWithEmailAndPassword(auth, form.email, form.password);
+  try {
+    setLoading(true);
+    // Attempt primary sign-in; Firebase enforces password + account existence.
+    const cred = await signInWithEmailAndPassword(auth, form.email, form.password);
 
-      await cred.user.reload();
-      const refreshed = auth.currentUser;
+    await cred.user.reload();
+    const refreshed = auth.currentUser;
 
-      if (!refreshed?.emailVerified) {
-        await sendEmailVerification(cred.user);
-        await signOut(auth);
-        setMessage("Please verify your email. Check your inbox for the link.");
-        return;
-      }
+    // Block access until the student verifies their UMass email; resend link if needed.
+    if (!refreshed?.emailVerified) {
+      await sendEmailVerification(cred.user);
+      await signOut(auth);
+      setMessage("Please verify your email. Check your inbox for the link.");
+      return;
+    }
 
-      await refreshed.getIdToken(true);
-      setMessage("Successfully logged in!");
-      setTimeout(() => navigate("/home"), 600);
+    // Force refresh of ID token so backend sees latest verification state.
+    await refreshed.getIdToken(true);
+    setMessage("Successfully logged in!");
+    setTimeout(() => navigate("/home"), 600);
 
-    } catch (err) {
-      let errorMessage = "Invalid credentials.";
+  } catch (err) {
+    let errorMessage = "Invalid credentials.";
       if (err.code === "auth/user-not-found") {
         errorMessage = "User not found. Sign up first.";
       } else if (err.code === "auth/wrong-password") {
