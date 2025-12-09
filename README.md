@@ -25,6 +25,13 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+#### Configure Environment (backend/.env)
+
+Create `backend/.env` with:
+- `MONGODB_URI=<your Mongo connection string>` (required)
+- `FIREBASE_CREDENTIALS_FILE=/full/path/to/serviceAccountKey.json` (or `FIREBASE_CREDENTIALS_JSON=<service-account-json>`; required for auth)
+- `GEMINI_API_KEY=<your Google Gemini API key>` (required for AI Assist)
+
 #### Run the FastAPI Server
 
 ```bash
@@ -44,6 +51,17 @@ npm start
 ```
 
 Your frontend application should now be running at http://127.0.0.1:3000.
+
+#### Configure Environment (frontend/.env)
+Create `frontend/.env` with your Firebase web config, for example:
+```
+REACT_APP_FIREBASE_API_KEY=...
+REACT_APP_FIREBASE_AUTH_DOMAIN=...
+REACT_APP_FIREBASE_PROJECT_ID=...
+REACT_APP_FIREBASE_STORAGE_BUCKET=...
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=...
+REACT_APP_FIREBASE_APP_ID=...
+```
 
 ### 4. Running Tests
 
@@ -71,13 +89,3 @@ npm test -- App.test.js ProtectedRoute.test.js
 - Python 3.7+
 - Node.js
 - npm
-
-## Firebase Authentication
-
-1. Create a Firebase project, enable Email/Password auth, and register a Web app.  
-2. Copy the Firebase web config into `frontend/.env` (see `frontend/.env.example` for keys).  
-3. Add a Firebase service account key file path to the backend environment: set `FIREBASE_CREDENTIALS_FILE=/full/path/to/serviceAccountKey.json` (or set `FIREBASE_CREDENTIALS_JSON` to the JSON string).  
-4. Install dependencies after updating config:
-   - Backend: `pip install -r requirements.txt` (adds `firebase-admin`)
-   - Frontend: `npm install` (adds `firebase`)  
-5. Start the servers; the frontend will obtain an ID token from Firebase and send it to the FastAPI backend in the `Authorization: Bearer <token>` header.
