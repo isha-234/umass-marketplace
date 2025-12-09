@@ -45,6 +45,25 @@ npm start
 
 Your frontend application should now be running at http://127.0.0.1:3000.
 
+### 4. Running Tests
+
+**Backend (FastAPI)**
+```bash
+cd backend
+source venv/bin/activate  # if not already active
+pip install -r requirements.txt  # ensures pytest/httpx available
+python -m pytest tests
+```
+
+**Frontend (React)**
+```bash
+cd frontend
+npm install
+npm test -- App.test.js ProtectedRoute.test.js
+# or run the full suite:
+# npm test
+```
+
 ---
 
 ## Requirements
