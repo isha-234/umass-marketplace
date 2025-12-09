@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
-import App from "./App";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "./AuthContext";
 
 jest.mock("react-router-dom", () => {
@@ -59,79 +59,73 @@ jest.mock("react-router-dom", () => {
 
 jest.mock("./AuthContext", () => ({
   useAuth: jest.fn(),
-  AuthProvider: ({ children }) => children,
 }));
 
-jest.mock("./ProtectedRoute", () => ({ children }) => <>{children}</>);
-jest.mock("./MessagesDrawer", () => () => <div>Messages Drawer</div>);
-jest.mock("./ProfileMenu", () => () => <div>Profile Menu</div>);
-jest.mock("./HomePage", () => () => <div>Home Page</div>);
-jest.mock("./AuthLogin", () => () => <div>Auth Page</div>);
-jest.mock("./SellerCreateListing", () => () => <div>Create Listing</div>);
-jest.mock("./Listings", () => () => <div>Listings Page</div>);
-jest.mock("./Events", () => () => <div>Events Page</div>);
-jest.mock("./MyListings", () => () => <div>My Listings</div>);
-jest.mock("./DraftListings", () => () => <div>Draft Listings</div>);
-jest.mock("./SavedItems", () => () => <div>Saved Items</div>);
-
-describe("App navigation", () => {
+describe("ProtectedRoute", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
-  test("shows login action for visitors", () => {
+  test("shows loading indicator while session is checked", () => {
     useAuth.mockReturnValue({
       user: null,
+      loading: true,
       isVerified: false,
-      loading: false,
-      logout: jest.fn(),
     });
 
     render(
-      <MemoryRouter initialEntries={["/listings"]}>
-        <App />
+      <MemoryRouter>
+        <ProtectedRoute>
+          <div>Private Content</div>
+        </ProtectedRoute>
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/log in/i)).toBeInTheDocument();
-    expect(screen.queryByText(/my messages/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Checking your session/i)).toBeInTheDocument();
   });
 
-  test("renders navbar controls for verified users", () => {
+  test("redirects unauthenticated users to auth screen", () => {
     useAuth.mockReturnValue({
-      user: { email: "student@umass.edu", emailVerified: true },
-      isVerified: true,
+      user: null,
       loading: false,
-      logout: jest.fn(),
+      isVerified: false,
     });
 
     render(
       <MemoryRouter initialEntries={["/home"]}>
-        <App />
+        <Routes>
+          <Route path="/auth" element={<div>Auth Page</div>} />
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <div>Private Area</div>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/UMass Marketplace/i)).toBeInTheDocument();
-    expect(screen.getByText(/My Messages/i)).toBeInTheDocument();
-    expect(screen.getByText(/Profile Menu/i)).toBeInTheDocument();
-    expect(screen.getByText(/Create Listing/i)).toBeInTheDocument();
+    expect(screen.getByText(/Auth Page/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Private Area/i)).not.toBeInTheDocument();
   });
 
-  test("hides navbar on the auth screen", () => {
+  test("renders children when user is verified", () => {
     useAuth.mockReturnValue({
-      user: null,
-      isVerified: false,
+      user: { email: "student@umass.edu" },
       loading: false,
-      logout: jest.fn(),
+      isVerified: true,
     });
 
     render(
-      <MemoryRouter initialEntries={["/auth"]}>
-        <App />
+      <MemoryRouter>
+        <ProtectedRoute>
+          <div>Private Content</div>
+        </ProtectedRoute>
       </MemoryRouter>
     );
 
-    expect(screen.queryByText(/UMass Marketplace/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/Auth Page/i)).toBeInTheDocument();
+    expect(screen.getByText(/Private Content/i)).toBeInTheDocument();
   });
 });
