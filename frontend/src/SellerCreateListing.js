@@ -89,14 +89,15 @@ export default function SellerCreateListing() {
     setFormData((prev) => ({ ...prev, images: chosen }));
   };
 
-  const validate = () => {
-    const errors = {};
+const validate = () => {
+  const errors = {};
 
-    if (!formData.title?.trim()) errors.title = "Item name is required.";
+  // Minimal publish-time validation; drafts can be lighter.
+  if (!formData.title?.trim()) errors.title = "Item name is required.";
 
-    if (formData.price === "" || isNaN(Number(formData.price))) {
-      errors.price = "Valid price is required.";
-    } else if (Number(formData.price) < 0) {
+  if (formData.price === "" || isNaN(Number(formData.price))) {
+    errors.price = "Valid price is required.";
+  } else if (Number(formData.price) < 0) {
       errors.price = "Price cannot be negative.";
     }
 
@@ -114,16 +115,17 @@ export default function SellerCreateListing() {
   };
 
   // AI Assist: send current description + images to backend/LLM
-  const handleAIAssist = async () => {
-    const fd = new FormData();
-    fd.append("description", formData.description);
-    formData.images.forEach((file) => fd.append("images", file));
+const handleAIAssist = async () => {
+  const fd = new FormData();
+  fd.append("description", formData.description);
+  formData.images.forEach((file) => fd.append("images", file));
 
-    try {
-      const url = "http://127.0.0.1:8000/ai-assist";
-      const res = await axios.post(url, fd, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+  try {
+    const url = "http://127.0.0.1:8000/ai-assist";
+    // Send partial context to the backend LLM endpoint; replaces description with its suggestion.
+    const res = await axios.post(url, fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
 
       if (res.status === 200) {
         setFormData((prev) => ({ ...prev, description: res.data.summary }));
@@ -135,14 +137,15 @@ export default function SellerCreateListing() {
     }
   };
 
-  const handleSubmit = async (status) => {
-    setServerMessage("");
+const handleSubmit = async (status) => {
+  setServerMessage("");
 
-    if (status === "published") {
-      const errors = validate();
-      setFormErrors(errors);
-      if (Object.keys(errors).length > 0) return;
-    }
+  // Only enforce full validation when publishing; drafts allow partial data.
+  if (status === "published") {
+    const errors = validate();
+    setFormErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+  }
 
     try {
       if (!idToken) {
@@ -171,6 +174,7 @@ export default function SellerCreateListing() {
       );
 
       const url = "http://127.0.0.1:8000/listing/insert";
+      // Same endpoint handles draft and publish; ownership enforced backend via token.
       const res = await axios.post(url, fd, {
         headers: {
           "Content-Type": "multipart/form-data",

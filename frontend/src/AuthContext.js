@@ -16,7 +16,9 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Listener for auth state: keeps UI in sync with Firebase sessions.
     const unsubUser = onAuthStateChanged(auth, async (firebaseUser) => {
+      // If the Firebase session exists but email is unverified, log out to enforce campus-only access.
       if (firebaseUser && !firebaseUser.emailVerified) {
         await signOut(auth);
         setUser(null);
@@ -28,6 +30,7 @@ export function AuthProvider({ children }) {
       setLoading(false);
     });
 
+    // Listener for token changes: captures refreshes and email verification changes.
     const unsubToken = onIdTokenChanged(auth, async (firebaseUser) => {
       // Keep user in sync here too so we pick up emailVerified changes after reloads.
       if (firebaseUser && !firebaseUser.emailVerified) {

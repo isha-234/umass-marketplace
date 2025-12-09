@@ -16,6 +16,7 @@ async def get_all_listings(
     sort: str | None = Query("newest", description="Sort by newest|price_asc|price_desc"),
 ):
     query: dict = {}
+    # Text search: simple regex on title/description.
     if q:
         regex = {"$regex": q, "$options": "i"}
         query["$or"] = [{"title": regex}, {"description": regex}]
@@ -26,6 +27,7 @@ async def get_all_listings(
 
     cursor = items_collection.find(query)
 
+    # Default newest-first; allow price sorting.
     sort_spec = [("createdAt", -1)]
     if sort == "price_asc":
         sort_spec = [("price", 1)]
